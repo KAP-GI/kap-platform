@@ -1175,8 +1175,10 @@ label.fl {
   <nav class="sb-nav">
     <div class="sb-lbl">Principal</div>
     <div class="ni" onclick="nav('dashboard',this)"><i class="ti ti-layout-dashboard"></i> Tableau de bord</div>
-    <div class="ni" onclick="nav('missions',this)"><i class="ti ti-briefcase"></i> Missions <span class="nb">5</span></div>
+    <div class="ni" onclick="nav('missions',this)"><i class="ti ti-briefcase"></i> Missions <span class="nb" id="missions-badge">5</span></div>
+    <div class="ni" onclick="nav('pipeline',this)"><i class="ti ti-git-branch"></i> Pipeline commercial</div>
     <div class="ni" onclick="nav('crm',this)"><i class="ti ti-users"></i> Clients & CRM</div>
+    <div class="ni" onclick="nav('collaborateurs',this)"><i class="ti ti-user-check"></i> Collaborateurs</div>
 
 
     <hr class="sb-div">
@@ -1990,39 +1992,287 @@ label.fl {
 
   <!-- ══ PAGE : DASHBOARD ══ -->
   <div class="pg" id="pg-dashboard">
-    <div class="ph"><div><div class="ph-title">Tableau de bord</div><div class="ph-sub">Vue d'ensemble · KAP Advisory 2026</div></div>
-      <button class="btn btn-primary" onclick="openModal('modal-mission')"><i class="ti ti-plus"></i> Nouvelle mission</button>
-    </div>
-    <div class="kpi-g">
-      <div class="kpi gold"><div class="kpi-l">CA An1 cible</div><div class="kpi-v">22 M</div><div class="kpi-s warn">▲ 8,4 M réalisé · 38%</div></div>
-      <div class="kpi ok"><div class="kpi-l">Missions actives</div><div class="kpi-v">5</div><div class="kpi-s up">● 2 en closing</div></div>
-      <div class="kpi info"><div class="kpi-l">Pipeline qualifié</div><div class="kpi-v">3</div><div class="kpi-s up">▲ 35 M potentiel</div></div>
-      <div class="kpi ok"><div class="kpi-l">Trésorerie</div><div class="kpi-v">28,4 M</div><div class="kpi-s up">✓ Seuil sortie atteint</div></div>
-    </div>
-    <div class="g2">
-      <div class="card">
-        <div class="ch"><div><div class="ct">Missions en cours</div></div><span class="ca" onclick="nav('missions',null)">Voir tout →</span></div>
-        <table class="dt"><thead><tr><th>Mission</th><th>Type</th><th>Montant</th><th>Statut</th></tr></thead><tbody>
-          <tr><td><div class="dn">Levée AGRI-SUD CI</div><div class="dm">Abidjan · Agro</div></td><td><span class="badge b-gold">Levée fonds</span></td><td class="num" style="color:var(--accent);font-weight:600">1,5 M</td><td><span class="badge b-orange">En cours</span></td></tr>
-          <tr><td><div class="dn">BP SOLARIS CI</div><div class="dm">Abidjan · Énergie</div></td><td><span class="badge b-blue">Business Plan</span></td><td class="num" style="color:var(--accent);font-weight:600">2 M</td><td><span class="badge b-green">Livraison</span></td></tr>
-          <tr><td><div class="dn">Restructuration METALIS</div><div class="dm">Bouaké · Industrie</div></td><td><span class="badge b-gray">Restructuration</span></td><td class="num" style="color:var(--accent);font-weight:600">3 M</td><td><span class="badge b-orange">En cours</span></td></tr>
-          <tr><td><div class="dn">Retainer PHARMAPLUS</div><div class="dm">Abidjan · Santé</div></td><td><span class="badge b-green">Retainer</span></td><td class="num" style="color:var(--accent);font-weight:600">800K/mois</td><td><span class="badge b-green">Actif</span></td></tr>
-          <tr><td><div class="dn">M&A TECHNOVA GROUP</div><div class="dm">Dakar · Fintech</div></td><td><span class="badge b-blue">M&A</span></td><td class="num" style="color:var(--accent);font-weight:600">4,5 M</td><td><span class="badge b-blue">Négociation</span></td></tr>
-        </tbody></table>
+    <div class="ph">
+      <div>
+        <div class="ph-title">Tableau de <span>bord</span></div>
+        <div class="ph-sub" id="db-date-sub">KAP Growth & Investment · Vue d'ensemble · An1 2026</div>
       </div>
-      <div class="gcol">
-        <div class="card">
-          <div class="ch"><div class="ct">Progression CA An1</div></div>
-          <div class="sr"><span class="sr-l">Facturés</span><div style="display:flex;align-items:center;gap:8px"><div class="pb-wrap"><div class="pb-fill" style="width:38%;background:var(--accent)"></div></div><span class="sr-v">8,4 M</span></div></div>
-          <div class="sr"><span class="sr-l">En cours</span><div style="display:flex;align-items:center;gap:8px"><div class="pb-wrap"><div class="pb-fill" style="width:57%;background:var(--info)"></div></div><span class="sr-v">11,8 M</span></div></div>
-          <div class="sr"><span class="sr-l">Pipeline</span><div style="display:flex;align-items:center;gap:8px"><div class="pb-wrap"><div class="pb-fill" style="width:25%;background:var(--slate-2)"></div></div><span class="sr-v">35 M pot.</span></div></div>
-          <div class="sr"><span class="sr-l">Cible An1</span><span class="sr-v" style="color:var(--accent);font-family:var(--font-display);font-size:15px">22 M FCFA</span></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" onclick="refreshDashboard()"><i class="ti ti-refresh"></i> Actualiser</button>
+        <button class="btn btn-primary" onclick="openModal('modal-mission')"><i class="ti ti-plus"></i> Nouvelle mission</button>
+      </div>
+    </div>
+
+    <!-- KPIs dynamiques -->
+    <div class="kpi-g">
+      <div class="kpi gold">
+        <div class="kpi-l">CA facturé An1</div>
+        <div class="kpi-v" id="db-ca-facture">—</div>
+        <div class="kpi-s" id="db-ca-sub">Chargement...</div>
+      </div>
+      <div class="kpi ok">
+        <div class="kpi-l">Missions actives</div>
+        <div class="kpi-v" id="db-missions-count">—</div>
+        <div class="kpi-s up" id="db-missions-sub">Total missions</div>
+      </div>
+      <div class="kpi info">
+        <div class="kpi-l">Pipeline commercial</div>
+        <div class="kpi-v" id="db-pipe-count">—</div>
+        <div class="kpi-s" id="db-pipe-sub">Prospects actifs</div>
+      </div>
+      <div class="kpi ok">
+        <div class="kpi-l">Équipe KAP</div>
+        <div class="kpi-v" id="db-team-count">—</div>
+        <div class="kpi-s neu" id="db-team-sub">Membres & collaborateurs</div>
+      </div>
+    </div>
+
+    <div class="g2" style="margin-bottom:14px">
+
+      <!-- Missions récentes dynamiques -->
+      <div class="card">
+        <div class="ch">
+          <div><div class="ct">Missions en cours</div><div class="cs" id="db-missions-cs">—</div></div>
+          <span class="ca" onclick="nav('missions',null)">Voir tout →</span>
         </div>
+        <table class="dt">
+          <thead><tr><th>Mission</th><th>Type</th><th>Honoraires</th><th>Statut</th></tr></thead>
+          <tbody id="db-missions-tbody">
+            <!-- Lignes statiques de référence -->
+            <tr data-static="1"><td><div class="dn">Levée AGRI-SUD CI</div><div class="dm">Abidjan · Agro</div></td><td><span class="badge b-gold">Levée fonds</span></td><td class="num" style="color:var(--accent);font-weight:600">1,5 M</td><td><span class="badge b-orange">En cours</span></td></tr>
+            <tr data-static="1"><td><div class="dn">BP SOLARIS CI</div><div class="dm">Abidjan · Énergie</div></td><td><span class="badge b-blue">Business Plan</span></td><td class="num" style="color:var(--accent);font-weight:600">2 M</td><td><span class="badge b-green">Livraison</span></td></tr>
+            <tr data-static="1"><td><div class="dn">Restructuration METALIS</div><div class="dm">Bouaké · Industrie</div></td><td><span class="badge b-gray">Restructuration</span></td><td class="num" style="color:var(--accent);font-weight:600">3 M</td><td><span class="badge b-orange">En cours</span></td></tr>
+            <tr data-static="1"><td><div class="dn">Retainer PHARMAPLUS</div><div class="dm">Abidjan · Santé</div></td><td><span class="badge b-green">Retainer</span></td><td class="num" style="color:var(--accent);font-weight:600">800K/mois</td><td><span class="badge b-green">Actif</span></td></tr>
+            <tr data-static="1"><td><div class="dn">M&A TECHNOVA GROUP</div><div class="dm">Dakar · Fintech</div></td><td><span class="badge b-blue">M&A</span></td><td class="num" style="color:var(--accent);font-weight:600">4,5 M</td><td><span class="badge b-blue">Signing</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="gcol">
+
+        <!-- Progression CA temps réel -->
+        <div class="card">
+          <div class="ch"><div><div class="ct">Progression CA An1</div><div class="cs">Cible 22 M FCFA</div></div></div>
+          <div class="sr">
+            <span class="sr-l">Facturé & encaissé</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="pb-wrap"><div class="pb-fill" id="db-bar-facture" style="width:38%;background:var(--ok)"></div></div>
+              <span class="sr-v" id="db-val-facture">8,4 M</span>
+            </div>
+          </div>
+          <div class="sr">
+            <span class="sr-l">Missions en cours</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="pb-wrap"><div class="pb-fill" id="db-bar-encours" style="width:57%;background:var(--accent)"></div></div>
+              <span class="sr-v" id="db-val-encours">11,8 M</span>
+            </div>
+          </div>
+          <div class="sr">
+            <span class="sr-l">Pipeline qualifié</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="pb-wrap"><div class="pb-fill" id="db-bar-pipe" style="width:25%;background:var(--slate-2)"></div></div>
+              <span class="sr-v" id="db-val-pipe">35 M pot.</span>
+            </div>
+          </div>
+          <div class="sr" style="border-top:2px solid var(--surface-3)">
+            <span class="sr-l" style="font-weight:600">Cible An1</span>
+            <span class="sr-v" style="color:var(--accent);font-family:var(--font-display);font-size:16px">22 M FCFA</span>
+          </div>
+        </div>
+
+        <!-- Activité temps réel -->
         <div class="card">
           <div class="ch"><div class="ct">Activité récente</div></div>
-          <div class="act-item"><div class="act-dot d-ok"></div><div><div class="act-txt">BP SOLARIS CI livré</div><div class="act-time">Aujourd'hui 09:15</div></div></div>
-          <div class="act-item"><div class="act-dot d-gold"></div><div><div class="act-txt">Retainer PHARMAPLUS signé · 800K/mois</div><div class="act-time">Hier 16:40</div></div></div>
-          <div class="act-item"><div class="act-dot d-info"></div><div><div class="act-txt">RDV TECHNOVA confirmé · 3 juin</div><div class="act-time">Il y a 2 jours</div></div></div>
+          <div id="db-activite-feed">
+            <div class="act-item"><div class="act-dot d-ok"></div><div><div class="act-txt">BP SOLARIS CI v3 livré</div><div class="act-time">Aujourd'hui 09:15</div></div></div>
+            <div class="act-item"><div class="act-dot d-info"></div><div><div class="act-txt">Retainer PHARMAPLUS signé · 800K/mois</div><div class="act-time">Hier 16:40</div></div></div>
+            <div class="act-item"><div class="act-dot d-warn"></div><div><div class="act-txt">SOLARIS ENERGY · DataBook DD reçue</div><div class="act-time">Il y a 5 jours</div></div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Ligne 3 : Pipeline + Conditions sortie + Roadmap -->
+    <div class="g3">
+      <div class="card">
+        <div class="ch"><div class="ct">Pipeline commercial</div><div class="cs" id="db-pipe-cs">—</div></div>
+        <div id="db-pipe-summary">
+          <div class="sr"><span class="sr-l">Prospection</span><span class="sr-v" id="db-pipe-s0">0</span></div>
+          <div class="sr"><span class="sr-l">Qualification</span><span class="sr-v" id="db-pipe-s1">0</span></div>
+          <div class="sr"><span class="sr-l">Proposition</span><span class="sr-v" id="db-pipe-s2">0</span></div>
+          <div class="sr"><span class="sr-l">Négociation</span><span class="sr-v" id="db-pipe-s3">0</span></div>
+          <div class="sr"><span class="sr-l">Closing</span><span class="sr-v up-c" id="db-pipe-s4">0</span></div>
+          <div class="sr" style="border-top:2px solid var(--surface-3)">
+            <span class="sr-l" style="font-weight:600">Total prospects</span>
+            <span class="sr-v" style="font-family:var(--font-display);font-size:16px;color:var(--accent)" id="db-pipe-total2">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ch"><div class="ct">Conditions sortie salariale</div><div class="cs">Jalons BP · Temps réel</div></div>
+        <div class="sr"><span class="sr-l">Trésorerie ≥ 20 M FCFA</span><span class="badge b-green">✓ 28,4 M</span></div>
+        <div class="sr"><span class="sr-l">Réserve familiale ≥ 19 M</span><span class="badge b-orange">En cours</span></div>
+        <div class="sr"><span class="sr-l" id="db-cond-missions-lbl">Pipeline signé ≥ 3</span><span class="badge" id="db-cond-missions-badge">—</span></div>
+        <div class="sr"><span class="sr-l">Encaissement ≥ 40 M</span><span class="badge b-orange" id="db-cond-encaiss">20,2 M · En cours</span></div>
+        <div class="sr"><span class="sr-l">Création juridique KAP</span><span class="badge b-blue">Oct. 2026</span></div>
+      </div>
+
+      <div class="card">
+        <div class="ch"><div class="ct">KAP en chiffres · Roadmap</div><div class="cs">Scénario central BP</div></div>
+        <div class="sr"><span class="sr-l">CA 2026 (An1 cible)</span><span class="sr-v" style="color:var(--accent)">22 M FCFA</span></div>
+        <div class="sr"><span class="sr-l">CA 2027 (An2)</span><span class="sr-v">85 M FCFA</span></div>
+        <div class="sr"><span class="sr-l">CA 2032 (cible)</span><span class="sr-v" style="color:var(--ok)">339 M FCFA</span></div>
+        <div class="sr"><span class="sr-l">Marge EBITDA 2032</span><span class="sr-v" style="color:var(--ok)">54%</span></div>
+        <div class="sr"><span class="sr-l">Portefeuille Investment 2032</span><span class="sr-v">460 M FCFA</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ PAGE : PIPELINE COMMERCIAL ══ -->
+  <div class="pg" id="pg-pipeline">
+    <div class="ph">
+      <div>
+        <div class="ph-title">Pipeline <span>commercial</span></div>
+        <div class="ph-sub">Prospection → Qualification → Proposition → Closing · Advisory & Academy</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" onclick="togglePipelineView()"><i class="ti ti-layout-list"></i> <span id="pipeline-view-lbl">Vue liste</span></button>
+        <button class="btn btn-primary" onclick="openModal('modal-prospect')"><i class="ti ti-plus"></i> Nouveau prospect</button>
+      </div>
+    </div>
+
+    <div class="kpi-g">
+      <div class="kpi gold"><div class="kpi-l">Prospects actifs</div><div class="kpi-v" id="kpi-pipe-total">0</div><div class="kpi-s neu">Total pipeline</div></div>
+      <div class="kpi info"><div class="kpi-l">En qualification</div><div class="kpi-v" id="kpi-pipe-qualif">0</div><div class="kpi-s neu">Opportunités identifiées</div></div>
+      <div class="kpi warn"><div class="kpi-l">Propositions envoyées</div><div class="kpi-v" id="kpi-pipe-prop">0</div><div class="kpi-s neu">En attente de réponse</div></div>
+      <div class="kpi ok"><div class="kpi-l">En closing</div><div class="kpi-v" id="kpi-pipe-closing">0</div><div class="kpi-s up">● Mandats imminents</div></div>
+    </div>
+
+    <!-- Vue Kanban -->
+    <div id="pipeline-kanban">
+      <div class="kb" style="grid-template-columns:repeat(5,1fr)">
+        <div class="kb-col">
+          <div class="kb-hd">Prospection <span id="kb-pipe-count-0" style="font-weight:400;color:var(--slate)">(0)</span></div>
+          <div class="kb-body" id="kb-pipe-0">
+            <div class="empty" style="padding:16px 8px"><i class="ti ti-inbox" style="font-size:20px"></i><div style="font-size:11px">Aucun prospect</div></div>
+          </div>
+        </div>
+        <div class="kb-col">
+          <div class="kb-hd">Qualification <span id="kb-pipe-count-1" style="font-weight:400;color:var(--slate)">(0)</span></div>
+          <div class="kb-body" id="kb-pipe-1">
+            <div class="empty" style="padding:16px 8px"><i class="ti ti-inbox" style="font-size:20px"></i><div style="font-size:11px">Aucun prospect</div></div>
+          </div>
+        </div>
+        <div class="kb-col">
+          <div class="kb-hd">Proposition <span id="kb-pipe-count-2" style="font-weight:400;color:var(--slate)">(0)</span></div>
+          <div class="kb-body" id="kb-pipe-2">
+            <div class="empty" style="padding:16px 8px"><i class="ti ti-inbox" style="font-size:20px"></i><div style="font-size:11px">Aucun prospect</div></div>
+          </div>
+        </div>
+        <div class="kb-col">
+          <div class="kb-hd">Négociation <span id="kb-pipe-count-3" style="font-weight:400;color:var(--slate)">(0)</span></div>
+          <div class="kb-body" id="kb-pipe-3">
+            <div class="empty" style="padding:16px 8px"><i class="ti ti-inbox" style="font-size:20px"></i><div style="font-size:11px">Aucun prospect</div></div>
+          </div>
+        </div>
+        <div class="kb-col">
+          <div class="kb-hd">Closing <span id="kb-pipe-count-4" style="font-weight:400;color:var(--slate)">(0)</span></div>
+          <div class="kb-body" id="kb-pipe-4">
+            <div class="empty" style="padding:16px 8px"><i class="ti ti-inbox" style="font-size:20px"></i><div style="font-size:11px">Aucun prospect</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vue Liste -->
+    <div id="pipeline-liste" style="display:none">
+      <div class="card">
+        <div class="ch"><div class="ct">Tous les prospects</div></div>
+        <table class="dt">
+          <thead><tr><th>Prospect / Contact</th><th>Type</th><th>Honoraires est.</th><th>Source</th><th>Stade</th><th>Dernière action</th><th></th></tr></thead>
+          <tbody id="pipeline-liste-tbody">
+            <tr><td colspan="7" class="empty-row" style="text-align:center;color:var(--slate);padding:24px">Aucun prospect — cliquez "+ Nouveau prospect" pour commencer</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE : COLLABORATEURS ══ -->
+  <div class="pg" id="pg-collaborateurs">
+    <div class="ph">
+      <div>
+        <div class="ph-title">Collaborateurs & <span>accès</span></div>
+        <div class="ph-sub">Gestion des membres de l'équipe KAP · Rôles · Missions assignées</div>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('modal-collaborateur')"><i class="ti ti-user-plus"></i> Inviter un collaborateur</button>
+    </div>
+
+    <div class="kpi-g kpi-g3">
+      <div class="kpi gold"><div class="kpi-l">Équipe KAP</div><div class="kpi-v" id="kpi-collab-total">1</div><div class="kpi-s neu">Membres actifs</div></div>
+      <div class="kpi ok"><div class="kpi-l">Collaborateurs</div><div class="kpi-v" id="kpi-collab-count">0</div><div class="kpi-s neu">Analystes & consultants</div></div>
+      <div class="kpi info"><div class="kpi-l">Portails clients</div><div class="kpi-v" id="kpi-client-count">1</div><div class="kpi-s neu">Accès actifs</div></div>
+    </div>
+
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div><div class="ct">Membres de l'équipe</div><div class="cs">Rôles et accès à la plateforme</div></div></div>
+        <div id="collab-list">
+          <!-- Entrée fixe : Augustin admin -->
+          <div class="sr" style="padding:14px 18px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div class="av" style="background:var(--navy);color:var(--line);border:1px solid rgba(184,150,110,.3)">AK</div>
+              <div>
+                <div class="dn">Augustin Kpantché</div>
+                <div class="dm">kpantche.augustin@gmail.com</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="badge b-navy">Fondateur & CEO</span>
+              <span class="role-badge role-admin">Admin</span>
+            </div>
+          </div>
+          <!-- Collaborateurs dynamiques injectés ici -->
+          <div id="collab-tbody"></div>
+        </div>
+      </div>
+
+      <div class="gcol">
+        <div class="card">
+          <div class="ch"><div class="ct">Rôles & permissions</div></div>
+          <div class="sr"><div style="display:flex;align-items:center;gap:8px"><span class="role-badge role-admin">Admin</span><span class="sr-l">Accès total</span></div><span style="font-size:11px;color:var(--slate)">Augustin uniquement</span></div>
+          <div class="sr"><div style="display:flex;align-items:center;gap:8px"><span class="role-badge role-collab">Collaborateur</span><span class="sr-l">Missions assignées</span></div><span style="font-size:11px;color:var(--slate)">Analystes & consultants</span></div>
+          <div class="sr"><div style="display:flex;align-items:center;gap:8px"><span class="role-badge role-client">Client</span><span class="sr-l">Portail mission</span></div><span style="font-size:11px;color:var(--slate)">Accès dossier seul</span></div>
+        </div>
+
+        <div class="card">
+          <div class="ch"><div class="ct">Inviter un nouveau membre</div></div>
+          <div class="cb">
+            <div class="fg" style="margin-bottom:12px">
+              <div class="fgf"><label class="fl">Nom complet</label><input class="fi" id="f-collab-nom-quick" placeholder="Prénom Nom"/></div>
+              <div class="fgf"><label class="fl">Email</label><input class="fi" id="f-collab-email-quick" placeholder="email@kapgrowth.ci" type="email"/></div>
+              <div><label class="fl">Rôle</label>
+                <select class="fi fs" id="f-collab-role-quick">
+                  <option value="collab">Collaborateur</option>
+                  <option value="client">Client</option>
+                </select>
+              </div>
+              <div><label class="fl">Spécialité</label>
+                <select class="fi fs" id="f-collab-spec-quick">
+                  <option>Analyste financier</option>
+                  <option>Consultant Advisory</option>
+                  <option>Chargé de mission</option>
+                  <option>Client externe</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="createCollaborateur()">
+              <i class="ti ti-user-plus"></i> Ajouter à l'équipe
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -2052,7 +2302,7 @@ label.fl {
     <div class="card">
       <table class="dt">
         <thead><tr><th>Mission / Client</th><th>Type</th><th>Honoraires</th><th>Provenance</th><th>Échéance</th><th>Statut</th><th></th></tr></thead>
-        <tbody>
+        <tbody id="missions-tbody">
           <tr>
             <td><div class="dn">Levée de fonds AGRI-SUD CI</div><div class="dm">Agro-industrie · Abidjan</div></td>
             <td><span class="badge b-gold">Levée fonds</span></td>
@@ -2128,7 +2378,7 @@ label.fl {
         </div>
         <table class="dt">
           <thead><tr><th>Nom / Organisation</th><th>Provenance</th><th>Secteur</th><th>Dernière interact.</th><th>Statut</th><th></th></tr></thead>
-          <tbody>
+          <tbody id="crm-tbody">
             <tr><td><div class="dn">AGRI-SUD CI</div><div class="dm">Konan Yao · DG · Abidjan</div></td><td style="font-size:11px;color:var(--slate)">Réseau Y3</td><td><span class="badge b-green">Agro</span></td><td style="font-size:11px">Il y a 2 jours</td><td><span class="badge b-orange">Client actif</span></td><td><span class="ca" onclick="nav('missions',null)">Mission →</span></td></tr>
             <tr><td><div class="dn">SOLARIS CI</div><div class="dm">Abena Adjoua · CFO · Abidjan</div></td><td style="font-size:11px;color:var(--slate)">Sirius Capital</td><td><span class="badge b-blue">Énergie</span></td><td style="font-size:11px">Aujourd'hui</td><td><span class="badge b-green">Client actif</span></td><td><span class="ca">Voir →</span></td></tr>
             <tr><td><div class="dn">PHARMAPLUS</div><div class="dm">Dr. Oumar Traoré · PDG · Abidjan</div></td><td style="font-size:11px;color:var(--slate)">Réseau CBAO</td><td><span class="badge b-gray">Santé</span></td><td style="font-size:11px">Cette semaine</td><td><span class="badge b-green">Retainer actif</span></td><td><span class="ca" onclick="nav('conseil-gouvernance',null)">Reporting →</span></td></tr>
@@ -2152,15 +2402,15 @@ label.fl {
           <div class="ch"><div class="ct">Nouveau contact</div></div>
           <div class="cb">
             <div class="fg" style="margin-bottom:10px">
-              <div><label class="fl">Nom complet</label><input class="fi" placeholder="Prénom Nom"/></div>
-              <div><label class="fl">Organisation</label><input class="fi" placeholder="Entreprise"/></div>
-              <div><label class="fl">Fonction</label><input class="fi" placeholder="DG · CFO · Analyste..."/></div>
+              <div><label class="fl">Nom complet</label><input class="fi" id="f-contact-nom" placeholder="Prénom Nom"/></div>
+              <div><label class="fl">Organisation</label><input class="fi" id="f-contact-org" placeholder="Entreprise"/></div>
+              <div><label class="fl">Fonction</label><input class="fi" id="f-contact-fonction" placeholder="DG · CFO · Analyste..."/></div>
               <div><label class="fl">Provenance</label>
-                <select class="fi fs"><option>Réseau Y3</option><option>Réseau Sirius</option><option>Partenaire bancaire</option><option>Référence client</option><option>Academy</option><option>Conférence</option></select>
+                <select class="fi fs" id="f-contact-provenance"><option>Réseau Y3</option><option>Réseau Sirius</option><option>Partenaire bancaire</option><option>Référence client</option><option>Academy</option><option>Conférence</option></select>
               </div>
-              <div class="fgf"><label class="fl">Téléphone</label><input class="fi" placeholder="+225 07 ..."/></div>
+              <div class="fgf"><label class="fl">Téléphone</label><input class="fi" id="f-contact-tel" placeholder="+225 07 ..."/></div>
             </div>
-            <button class="btn btn-primary" style="width:100%;justify-content:center"><i class="ti ti-user-plus"></i> Ajouter au CRM</button>
+            <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="createContact()"><i class="ti ti-user-plus"></i> Ajouter au CRM</button>
           </div>
         </div>
       </div>
@@ -2170,7 +2420,7 @@ label.fl {
   <!-- ══ PAGE : ACADEMY ══ -->
   <div class="pg" id="pg-academy-catalogue">
     <div class="ph"><div><div class="ph-title">KAP Academy</div><div class="ph-sub">Formations professionnelles · Conseil financier UEMOA</div></div>
-      <button class="btn btn-primary"><i class="ti ti-plus"></i> Nouvelle formation</button>
+      <button class="btn btn-primary" onclick="openModal('modal-formation')"><i class="ti ti-plus"></i> Nouvelle formation</button>
     </div>
     <div class="kpi-g kpi-g3">
       <div class="kpi gold"><div class="kpi-l">Formations actives</div><div class="kpi-v">4</div><div class="kpi-s up">● Intra & inter</div></div>
@@ -2179,7 +2429,7 @@ label.fl {
     </div>
     <div class="card">
       <div class="ch"><div class="ct">Catalogue de formations</div></div>
-      <table class="dt"><thead><tr><th>Formation</th><th>Format</th><th>Durée</th><th>Tarif</th><th>Statut</th></tr></thead><tbody>
+      <table class="dt"><thead><tr><th>Formation</th><th>Format</th><th>Durée</th><th>Tarif</th><th>Statut</th></tr></thead><tbody id="formations-tbody">
         <tr><td><div class="dn">Levée de fonds pour PME africaines</div><div class="dm">Finance d'entreprise · UEMOA</div></td><td><span class="badge b-gold">Inter-entreprise</span></td><td style="font-size:11px">2 jours</td><td class="num" style="color:var(--accent)">300K/pers.</td><td><span class="badge b-green">Actif</span></td></tr>
         <tr><td><div class="dn">Business Plans bancables UEMOA</div><div class="dm">Modélisation · Bailleurs institutionnels</div></td><td><span class="badge b-blue">Intra-entreprise</span></td><td style="font-size:11px">3 jours</td><td class="num" style="color:var(--accent)">2 M/session</td><td><span class="badge b-green">Actif</span></td></tr>
         <tr><td><div class="dn">Modélisation financière avancée</div><div class="dm">Excel · Cas réels UEMOA</div></td><td><span class="badge b-gold">Inter-entreprise</span></td><td style="font-size:11px">2 jours</td><td class="num" style="color:var(--accent)">350K/pers.</td><td><span class="badge b-green">Actif</span></td></tr>
@@ -2191,7 +2441,7 @@ label.fl {
   <!-- ══ PAGE : INVESTMENT PIPELINE ══ -->
   <div class="pg" id="pg-inv-pipeline">
     <div class="ph"><div><div class="ph-title">Pipeline <span style="color:var(--accent)">PME cibles</span></div><div class="ph-sub">KAP Investment · Tickets 50–60 M FCFA · Participation 51–75% · Secteurs : Industrie · Agro · Énergie · Fintech</div></div>
-      <button class="btn btn-primary"><i class="ti ti-plus"></i> Ajouter une cible</button>
+      <button class="btn btn-primary" onclick="openModal('modal-cible')"><i class="ti ti-plus"></i> Ajouter une cible</button>
     </div>
 
     <div class="kpi-g">
@@ -2208,7 +2458,7 @@ label.fl {
           <div class="kb">
             <div class="kb-col">
               <div class="kb-hd">Prospection <span style="font-weight:400;color:var(--slate)">(2)</span></div>
-              <div class="kb-body">
+              <div class="kb-body" id="kb-prospection-body">
                 <div class="kb-card">
                   <div class="kb-cn">PME LOGISTIQUE CI</div>
                   <div class="kb-cm">Abidjan · Transport & logistique</div>
@@ -2386,27 +2636,222 @@ label.fl {
     <!-- Section Bilan (cachée) -->
     <div id="diag-bilan" style="display:none">
       <div class="kpi-g">
-        <div class="kpi gold"><div class="kpi-l">Actif total 2024</div><div class="kpi-v">~15 Md</div><div class="kpi-s neu">Immobilisé + circulant</div></div>
-        <div class="kpi ok"><div class="kpi-l">Capitaux propres</div><div class="kpi-v">13,2 Md</div><div class="kpi-s dn">▼ −1,8% vs 2023</div></div>
+        <div class="kpi gold"><div class="kpi-l">Actifs nets 2024</div><div class="kpi-v">13,2 Md</div><div class="kpi-s dn">▼ −1,8% vs 2023</div></div>
+        <div class="kpi ok"><div class="kpi-l">Capitaux propres</div><div class="kpi-v">13,2 Md</div><div class="kpi-s neu">100% des actifs nets</div></div>
         <div class="kpi warn"><div class="kpi-l">BFR 2024</div><div class="kpi-v">2,3 Md</div><div class="kpi-s dn">▼ −57% vs 2023</div></div>
-        <div class="kpi ok"><div class="kpi-l">Dettes financières</div><div class="kpi-v">1,5 Md</div><div class="kpi-s dn">▲ +101% vs 2023</div></div>
+        <div class="kpi danger"><div class="kpi-l">Dettes financières</div><div class="kpi-v">1,49 Md</div><div class="kpi-s dn">▲ +101% vs 2023</div></div>
       </div>
-      <div class="empty"><i class="ti ti-lock"></i><div class="empty-t">Section Bilan</div><div class="empty-s">Détail de la structure actif / passif — à construire section suivante</div></div>
+
+      <div class="g2">
+        <div class="card">
+          <div class="ch"><div><div class="ct">Structure du bilan synthétique</div><div class="cs">En millions FCFA · 2021–2024</div></div></div>
+          <table class="dt">
+            <thead><tr><th>Rubrique</th><th class="num">2021</th><th class="num">2022</th><th class="num">2023</th><th class="num">2024</th><th class="num">Var 23/24</th></tr></thead>
+            <tbody>
+              <tr style="font-weight:600"><td>Actifs immobilisés</td><td class="num">7 951</td><td class="num">7 935</td><td class="num">4 958</td><td class="num">7 635</td><td class="num up-c">+53,9%</td></tr>
+              <tr><td style="padding-left:22px;color:var(--slate)">Immo. corporelles</td><td class="num neu-c">7 421</td><td class="num neu-c">7 434</td><td class="num neu-c">4 873</td><td class="num neu-c">6 337</td><td class="num up-c">+30,1%</td></tr>
+              <tr><td style="padding-left:22px;color:var(--slate)">Immo. incorporelles</td><td class="num neu-c">505</td><td class="num neu-c">479</td><td class="num neu-c">2</td><td class="num neu-c">34</td><td class="num up-c">+>100%</td></tr>
+              <tr style="background:var(--warn-bg)"><td style="font-weight:600">BFR</td><td class="num">231</td><td class="num">1 218</td><td class="num" style="font-weight:600">5 404</td><td class="num dn-c" style="font-weight:600">2 327</td><td class="num dn-c">−56,9%</td></tr>
+              <tr><td style="padding-left:22px;color:var(--slate)">BFR opérationnel</td><td class="num neu-c">−1 288</td><td class="num neu-c">936</td><td class="num neu-c">2 679</td><td class="num neu-c">1 013</td><td class="num dn-c">−62,2%</td></tr>
+              <tr><td style="padding-left:22px;color:var(--slate)">BFR non opérationnel</td><td class="num neu-c">1 519</td><td class="num neu-c">282</td><td class="num neu-c">2 725</td><td class="num neu-c">1 314</td><td class="num dn-c">−51,8%</td></tr>
+              <tr><td>Trésorerie nette</td><td class="num dn-c">−664</td><td class="num dn-c">−566</td><td class="num up-c">4 173</td><td class="num up-c">4 908</td><td class="num up-c">+17,6%</td></tr>
+              <tr><td>Dettes financières</td><td class="num neu-c">−438</td><td class="num neu-c">−70</td><td class="num dn-c">−739</td><td class="num dn-c">−1 488</td><td class="num dn-c">+101,3%</td></tr>
+              <tr style="background:var(--surface);font-weight:700"><td>Actifs nets</td><td class="num">6 865</td><td class="num">8 282</td><td class="num">13 448</td><td class="num">13 206</td><td class="num dn-c">−1,8%</td></tr>
+              <tr style="font-weight:700"><td>Capitaux propres</td><td class="num">6 865</td><td class="num">8 282</td><td class="num">13 448</td><td class="num">13 206</td><td class="num dn-c">−1,8%</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="gcol">
+          <div class="card">
+            <div class="ch"><div class="ct">Signaux structure bilan</div></div>
+            <div class="cb" style="padding:12px">
+              <div class="sig danger"><i class="ti ti-alert-triangle"></i><div class="sig-t"><span class="sig-title">Endettement financier x2 en un an</span>1,49 Md FCFA en 2024 contre 739 M en 2023 — recours croissant à la dette</div></div>
+              <div class="sig warn"><i class="ti ti-alert-circle"></i><div class="sig-t"><span class="sig-title">Actifs nets en léger recul</span>−1,8% malgré une forte croissance du CA — signe de tension sur la rentabilité</div></div>
+              <div class="sig ok"><i class="ti ti-check"></i><div class="sig-t"><span class="sig-title">Trésorerie solide et croissante</span>4,9 Md FCFA en 2024, en hausse constante depuis 2023</div></div>
+              <div class="sig ok"><i class="ti ti-check"></i><div class="sig-t"><span class="sig-title">BFR maîtrisé</span>Net recul de 57% — meilleure gestion du cycle d'exploitation</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ct">Composition capitaux propres 2024</div></div>
+            <div class="cb" style="padding:12px 16px">
+              <div class="pr"><span class="pr-l">Capital social</span><div class="pr-t"><div class="pr-f" style="width:4%;background:var(--navy)"></div></div><span class="pr-v">523 M</span></div>
+              <div class="pr"><span class="pr-l">Écart de réévaluation</span><div class="pr-t"><div class="pr-f" style="width:61%;background:var(--accent)"></div></div><span class="pr-v">8 039 M</span></div>
+              <div class="pr"><span class="pr-l">Report à nouveau</span><div class="pr-t"><div class="pr-f" style="width:6%;background:var(--ok)"></div></div><span class="pr-v">735 M</span></div>
+              <div class="pr"><span class="pr-l">Subventions d'invest.</span><div class="pr-t"><div class="pr-f" style="width:24%;background:var(--warn)"></div></div><span class="pr-v">3 204 M</span></div>
+              <div class="pr"><span class="pr-l">Résultat net</span><div class="pr-t"><div class="pr-f" style="width:5%;background:var(--slate)"></div></div><span class="pr-v">705 M</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Section Postes clés (cachée) -->
     <div id="diag-postes" style="display:none">
-      <div class="empty"><i class="ti ti-lock"></i><div class="empty-t">Postes clés</div><div class="empty-s">Détail CA, charges de personnel, services extérieurs, immobilisations — à construire</div></div>
+      <div class="kpi-g">
+        <div class="kpi gold"><div class="kpi-l">Services extérieurs 2024</div><div class="kpi-v">7,73 Md</div><div class="kpi-s dn">▲ +48,3% · 54,5% du CA</div></div>
+        <div class="kpi warn"><div class="kpi-l">Autres charges 2024</div><div class="kpi-v">7,12 Md</div><div class="kpi-s dn">▲ +28,4% · 50,2% du CA</div></div>
+        <div class="kpi ok"><div class="kpi-l">Charges personnel</div><div class="kpi-v">718 M</div><div class="kpi-s up">▼ −6,1% · maîtrisées</div></div>
+        <div class="kpi info"><div class="kpi-l">Immobilisations corp.</div><div class="kpi-v">6,34 Md</div><div class="kpi-s up">▲ +30,1% vs 2023</div></div>
+      </div>
+
+      <div class="g2">
+        <div class="card">
+          <div class="ch"><div><div class="ct">Détail des charges opérationnelles</div><div class="cs">En millions FCFA · poids dans le CA 2024</div></div></div>
+          <table class="dt">
+            <thead><tr><th>Poste</th><th class="num">2023</th><th class="num">2024</th><th class="num">Var.</th><th class="num">% CA 2024</th></tr></thead>
+            <tbody>
+              <tr><td><div class="dn">Services extérieurs</div></td><td class="num">5 210</td><td class="num dn-c" style="font-weight:600">7 726</td><td class="num dn-c">+48,3%</td><td class="num" style="font-weight:600;color:var(--danger)">54,5%</td></tr>
+              <tr><td><div class="dn">Autres charges</div></td><td class="num">5 545</td><td class="num dn-c" style="font-weight:600">7 120</td><td class="num dn-c">+28,4%</td><td class="num" style="font-weight:600;color:var(--warn)">50,2%</td></tr>
+              <tr><td><div class="dn">Transports</div></td><td class="num">440</td><td class="num dn-c">634</td><td class="num dn-c">+44,2%</td><td class="num">4,5%</td></tr>
+              <tr><td><div class="dn">Charges de personnel</div></td><td class="num">765</td><td class="num up-c">718</td><td class="num up-c">−6,1%</td><td class="num">5,1%</td></tr>
+              <tr><td><div class="dn">Impôts et taxes</div></td><td class="num">108</td><td class="num neu-c">108</td><td class="num neu-c">+0,2%</td><td class="num">0,8%</td></tr>
+              <tr><td><div class="dn">Achats MP & fournitures</div></td><td class="num">0</td><td class="num">422</td><td class="num">Nouveau</td><td class="num">3,0%</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="gcol">
+          <div class="card">
+            <div class="ch"><div class="ct">Immobilisations 2024</div><div class="cs">Répartition par nature</div></div>
+            <div class="cb" style="padding:12px 16px">
+              <div class="pr"><span class="pr-l">Bâtiments & install.</span><div class="pr-t"><div class="pr-f" style="width:33%;background:var(--navy)"></div></div><span class="pr-v">2 102 M</span></div>
+              <div class="pr"><span class="pr-l">Terrains</span><div class="pr-t"><div class="pr-f" style="width:40%;background:var(--accent)"></div></div><span class="pr-v">2 514 M</span></div>
+              <div class="pr"><span class="pr-l">Matériel de transport</span><div class="pr-t"><div class="pr-f" style="width:20%;background:var(--ok)"></div></div><span class="pr-v">1 250 M</span></div>
+              <div class="pr"><span class="pr-l">Matériel & mobilier</span><div class="pr-t"><div class="pr-f" style="width:7%;background:var(--warn)"></div></div><span class="pr-v">471 M</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ct">Points de vigilance postes</div></div>
+            <div class="cb" style="padding:12px">
+              <div class="sig danger"><i class="ti ti-alert-triangle"></i><div class="sig-t"><span class="sig-title">104,7% du CA en charges (Sces ext. + Autres)</span>Les deux premiers postes de charges dépassent seuls le CA total — structure de coûts à challenger</div></div>
+              <div class="sig warn"><i class="ti ti-alert-circle"></i><div class="sig-t"><span class="sig-title">Absence de détail "Services extérieurs"</span>7,7 Md FCFA agrégés sans sous-catégories visibles — recommandé : audit détaillé par nature de prestation</div></div>
+              <div class="sig ok"><i class="ti ti-check"></i><div class="sig-t"><span class="sig-title">Charges de personnel sous contrôle</span>Seulement 5,1% du CA — structure légère, opportunité de capacité non utilisée</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Section Ratios (cachée) -->
     <div id="diag-ratios" style="display:none">
-      <div class="empty"><i class="ti ti-lock"></i><div class="empty-t">Ratios & scoring</div><div class="empty-s">Liquidité, solvabilité, rentabilité, score KAP /10 — à construire</div></div>
+      <div class="g2">
+        <div class="card">
+          <div class="ch"><div><div class="ct">Ratios financiers clés</div><div class="cs">2023 vs 2024 · Normes SYSCOHADA</div></div></div>
+          <table class="dt">
+            <thead><tr><th>Ratio</th><th class="num">2023</th><th class="num">2024</th><th>Lecture</th></tr></thead>
+            <tbody>
+              <tr><td><div class="dn">Marge EBITDA</div></td><td class="num">66,2%</td><td class="num dn-c" style="font-weight:600">6,0%</td><td><span class="badge b-red">Critique</span></td></tr>
+              <tr><td><div class="dn">Marge nette</div></td><td class="num">23,3%</td><td class="num dn-c" style="font-weight:600">5,0%</td><td><span class="badge b-orange">Vigilance</span></td></tr>
+              <tr><td><div class="dn">Autonomie financière</div></td><td class="num">95,2%</td><td class="num">93,5%</td><td><span class="badge b-green">Excellent</span></td></tr>
+              <tr><td><div class="dn">Liquidité générale</div></td><td class="num">2,1x</td><td class="num">2,4x</td><td><span class="badge b-green">Solide</span></td></tr>
+              <tr><td><div class="dn">Gearing (dette/CP)</div></td><td class="num">5,5%</td><td class="num">11,3%</td><td><span class="badge b-orange">En hausse</span></td></tr>
+              <tr><td><div class="dn">Couverture des frais financiers</div></td><td class="num">59,8x</td><td class="num">8,9x</td><td><span class="badge b-orange">Dégradation</span></td></tr>
+              <tr><td><div class="dn">Rotation BFR (jours de CA)</div></td><td class="num">245j</td><td class="num">60j</td><td><span class="badge b-green">Amélioration</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="gcol">
+          <div class="card">
+            <div class="ch"><div class="ct">Score KAP — Santé financière</div></div>
+            <div class="score-wrap" style="padding:18px 18px 8px">
+              <div class="ring">
+                <svg width="72" height="72" viewBox="0 0 72 72">
+                  <circle cx="36" cy="36" r="30" fill="none" stroke="var(--surface-3)" stroke-width="7"/>
+                  <circle cx="36" cy="36" r="30" fill="none" stroke="var(--warn)" stroke-width="7" stroke-dasharray="113 188" stroke-linecap="round"/>
+                </svg>
+                <div class="ring-val">58</div>
+              </div>
+              <div class="score-text">
+                <h3>Vigilance requise</h3>
+                <p>Score 58/100 — solidité bilancielle forte mais profitabilité 2024 très dégradée. Diagnostic complémentaire recommandé sur les charges.</p>
+              </div>
+            </div>
+            <div class="cb" style="padding:0 18px 16px">
+              <div class="score-grid">
+                <div class="score-item"><div class="score-num s-ok">82</div><div class="score-lbl">Solvabilité</div></div>
+                <div class="score-item"><div class="score-num s-warn">61</div><div class="score-lbl">Liquidité</div></div>
+                <div class="score-item"><div class="score-num s-dn">31</div><div class="score-lbl">Profitabilité</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ct">Benchmark sectoriel</div><div class="cs">vs structures sportives UEMOA</div></div>
+            <div class="sr"><span class="sr-l">Marge EBITDA secteur</span><span class="sr-v">15–25%</span></div>
+            <div class="sr"><span class="sr-l">FIF 2024</span><span class="sr-v" style="color:var(--danger)">6,0% ▼</span></div>
+            <div class="sr"><span class="sr-l">Autonomie financière secteur</span><span class="sr-v">60–75%</span></div>
+            <div class="sr"><span class="sr-l">FIF 2024</span><span class="sr-v" style="color:var(--ok)">93,5% ▲</span></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Section Recommandations (cachée) -->
     <div id="diag-reco" style="display:none">
-      <div class="empty"><i class="ti ti-lock"></i><div class="empty-t">Recommandations</div><div class="empty-s">Points forts, risques, leviers de valeur, export PDF — à construire</div></div>
+      <div class="g2">
+        <div class="card">
+          <div class="ch"><div class="ct">Points forts identifiés</div></div>
+          <div class="cb" style="padding:12px">
+            <div class="sig ok"><i class="ti ti-trending-up"></i><div class="sig-t"><span class="sig-title">Croissance commerciale réelle</span>CAGR du CA 2021–2024 de +216% — dynamique soutenue par les compétitions et le sponsoring, hors effet subvention</div></div>
+            <div class="sig ok"><i class="ti ti-shield-check"></i><div class="sig-t"><span class="sig-title">Structure bilancielle saine</span>Autonomie financière de 93,5% — quasi-absence de dépendance aux créanciers externes</div></div>
+            <div class="sig ok"><i class="ti ti-cash"></i><div class="sig-t"><span class="sig-title">Trésorerie disponible solide</span>4,9 Md FCFA en 2024, en progression constante — capacité d'investissement immédiate</div></div>
+            <div class="sig ok"><i class="ti ti-users"></i><div class="sig-t"><span class="sig-title">Masse salariale maîtrisée</span>5,1% du CA seulement — structure légère avec marge de manœuvre pour renforcer les équipes clés</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="ch"><div class="ct">Risques & points de vigilance</div></div>
+          <div class="cb" style="padding:12px">
+            <div class="sig danger"><i class="ti ti-alert-triangle"></i><div class="sig-t"><span class="sig-title">Effondrement de la profitabilité</span>Marge EBITDA passée de 66,2% à 6,0% en un an — la croissance du CA n'a pas été convertie en résultat</div></div>
+            <div class="sig danger"><i class="ti ti-alert-triangle"></i><div class="sig-t"><span class="sig-title">Dépendance critique aux subventions</span>Recul de 61% des subventions en 2024 — vulnérabilité structurelle si la tendance se poursuit</div></div>
+            <div class="sig warn"><i class="ti ti-alert-circle"></i><div class="sig-t"><span class="sig-title">Charges opérationnelles hors de contrôle</span>Services extérieurs + Autres charges = 104,7% du CA — premier facteur d'érosion de la marge</div></div>
+            <div class="sig warn"><i class="ti ti-alert-circle"></i><div class="sig-t"><span class="sig-title">Endettement financier x2</span>1,49 Md FCFA en 2024 — tendance à surveiller si elle s'accélère sans contrepartie en investissement productif</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ch"><div><div class="ct">Leviers de valeur prioritaires</div><div class="cs">Plan d'action recommandé · 3 horizons</div></div></div>
+        <div class="cb" style="padding:14px 16px">
+          <div class="pr" style="margin-bottom:14px">
+            <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px">
+              <div style="width:24px;height:24px;border-radius:50%;background:var(--danger);color:var(--white);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--navy)">Audit détaillé des services extérieurs (0–3 mois)</div>
+                <div style="font-size:12px;color:var(--slate);margin-top:2px">Décomposer les 7,7 Md FCFA par nature de prestation et identifier les postes négociables ou supprimables. Objectif : ramener le poste sous 35% du CA.</div>
+              </div>
+            </div>
+          </div>
+          <div class="pr" style="margin-bottom:14px">
+            <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px">
+              <div style="width:24px;height:24px;border-radius:50%;background:var(--warn);color:var(--white);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--navy)">Diversification des revenus propres (3–12 mois)</div>
+                <div style="font-size:12px;color:var(--slate);margin-top:2px">Réduire la dépendance aux subventions en développant les revenus de sponsoring et de droits — actuellement 89% du CA concentré sur 2 sources.</div>
+              </div>
+            </div>
+          </div>
+          <div class="pr">
+            <div style="display:flex;align-items:flex-start;gap:12px">
+              <div style="width:24px;height:24px;border-radius:50%;background:var(--ok);color:var(--white);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--navy)">Mise en place d'un reporting mensuel de pilotage (immédiat)</div>
+                <div style="font-size:12px;color:var(--slate);margin-top:2px">Suivre la marge EBITDA mensuellement pour détecter toute dérive avant la clôture annuelle — retainer KAP recommandé.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ch"><div class="ct">Export du diagnostic</div></div>
+        <div class="cb" style="display:flex;gap:10px;padding:16px">
+          <button class="btn btn-navy" onclick="exportDiagnosticPDF()"><i class="ti ti-file-text"></i> Exporter rapport complet (PDF)</button>
+          <button class="btn btn-ghost"><i class="ti ti-presentation"></i> Exporter synthèse (PowerPoint)</button>
+          <button class="btn btn-ghost"><i class="ti ti-mail"></i> Envoyer au client</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -3440,18 +3885,18 @@ label.fl {
   </div>
   <div class="pg" id="pg-honor-factures">
     <div class="ph"><div><div class="ph-title">Factures & <span style="color:var(--accent)">suivi</span></div><div class="ph-sub">Honoraires · Facturation · Encaissements · Relances</div></div>
-      <button class="btn btn-primary"><i class="ti ti-plus"></i> Nouvelle facture</button>
+      <button class="btn btn-primary" onclick="openModal('modal-facture')"><i class="ti ti-plus"></i> Nouvelle facture</button>
     </div>
     <div class="kpi-g kpi-g3">
-      <div class="kpi gold"><div class="kpi-l">Facturé An1</div><div class="kpi-v">8,4 M</div><div class="kpi-s up">FCFA · 38% cible</div></div>
+      <div class="kpi gold"><div class="kpi-l">Facturé An1</div><div class="kpi-v" id="kpi-facture-total">8,4 M</div><div class="kpi-s up">FCFA · 38% cible</div></div>
       <div class="kpi ok"><div class="kpi-l">Encaissé</div><div class="kpi-v">6,2 M</div><div class="kpi-s up">74% des factures</div></div>
-      <div class="kpi warn"><div class="kpi-l">En attente</div><div class="kpi-v">2,2 M</div><div class="kpi-s dn">● 2 factures impayées</div></div>
+      <div class="kpi warn"><div class="kpi-l">En attente</div><div class="kpi-v" id="kpi-facture-attente">2,2 M</div><div class="kpi-s dn">● 2 factures impayées</div></div>
     </div>
     <div class="card">
       <div class="ch"><div class="ct">Suivi des factures</div></div>
       <table class="dt">
         <thead><tr><th>Facture</th><th>Client</th><th>Mission</th><th>Montant</th><th>Date</th><th>Statut</th></tr></thead>
-        <tbody>
+        <tbody id="factures-tbody">
           <tr><td style="font-weight:600">KAP-2026-005</td><td><div class="dn">PHARMAPLUS</div></td><td style="font-size:11px">Retainer juin 2026</td><td class="num" style="color:var(--accent);font-weight:600">800 K</td><td style="font-size:11px">1 juin 2026</td><td><span class="badge b-green">Encaissée</span></td></tr>
           <tr><td style="font-weight:600">KAP-2026-004</td><td><div class="dn">SOLARIS CI</div></td><td style="font-size:11px">BP · Solde 50%</td><td class="num" style="color:var(--accent);font-weight:600">1 M</td><td style="font-size:11px">28 mai 2026</td><td><span class="badge b-orange">En attente</span></td></tr>
           <tr><td style="font-weight:600">KAP-2026-003</td><td><div class="dn">METALIS</div></td><td style="font-size:11px">Restructuration · Acompte 40%</td><td class="num" style="color:var(--accent);font-weight:600">1,2 M</td><td style="font-size:11px">15 mai 2026</td><td><span class="badge b-green">Encaissée</span></td></tr>
@@ -4040,22 +4485,129 @@ label.fl {
     <div class="mo-hd"><span class="mo-t">Nouvelle mission Advisory</span><span class="mo-x" onclick="closeModal('modal-mission')">✕</span></div>
     <div class="mo-bd">
       <div class="fg">
-        <div class="fgf"><label class="fl">Nom de la mission</label><input class="fi" placeholder="Ex : Levée de fonds AGRI-SUD CI"/></div>
-        <div><label class="fl">Client</label><input class="fi" placeholder="Entreprise"/></div>
-        <div><label class="fl">Secteur</label><select class="fi fs"><option>Agro-industrie</option><option>Énergie</option><option>Industrie</option><option>Fintech</option><option>Santé</option><option>Immobilier</option></select></div>
-        <div><label class="fl">Type de mission</label><select class="fi fs"><option>Levée de fonds</option><option>Business Plan</option><option>M&A</option><option>Retainer</option><option>Restructuration</option><option>PPP / Project Finance</option></select></div>
-        <div><label class="fl">Honoraires estimés (FCFA)</label><input class="fi" placeholder="Ex : 2 000 000"/></div>
-        <div><label class="fl">Facturation</label><select class="fi fs"><option>Honoraires fixes</option><option>Success fee (3%)</option><option>Retainer mensuel</option><option>Mixte</option></select></div>
-        <div><label class="fl">Date démarrage</label><input class="fi" type="date" value="2026-06-01"/></div>
-        <div><label class="fl">Échéance</label><input class="fi" type="date" value="2026-09-30"/></div>
-        <div><label class="fl">Source</label><select class="fi fs"><option>Réseau Y3</option><option>Réseau Sirius Capital</option><option>Partenaire bancaire</option><option>Référence client</option></select></div>
-        <div><label class="fl">Priorité</label><select class="fi fs"><option>Haute</option><option>Normale</option><option>Faible</option></select></div>
-        <div class="fgf"><label class="fl">Description / périmètre</label><textarea class="fi" rows="3" placeholder="Objectifs et périmètre de la mission..."></textarea></div>
+        <div class="fgf"><label class="fl">Nom de la mission</label><input class="fi" id="f-mission-nom" placeholder="Ex : Levée de fonds AGRI-SUD CI"/></div>
+        <div><label class="fl">Client</label><input class="fi" id="f-mission-client" placeholder="Entreprise"/></div>
+        <div><label class="fl">Secteur</label><select class="fi fs" id="f-mission-secteur"><option>Agro-industrie</option><option>Énergie</option><option>Industrie</option><option>Fintech</option><option>Santé</option><option>Immobilier</option></select></div>
+        <div><label class="fl">Type de mission</label><select class="fi fs" id="f-mission-type"><option>Levée de fonds</option><option>Business Plan</option><option>M&A</option><option>Retainer</option><option>Restructuration</option><option>PPP / Project Finance</option></select></div>
+        <div><label class="fl">Honoraires estimés (FCFA)</label><input class="fi" id="f-mission-honoraires" placeholder="Ex : 2 000 000"/></div>
+        <div><label class="fl">Facturation</label><select class="fi fs" id="f-mission-facturation"><option>Honoraires fixes</option><option>Success fee (3%)</option><option>Retainer mensuel</option><option>Mixte</option></select></div>
+        <div><label class="fl">Date démarrage</label><input class="fi" type="date" id="f-mission-debut" value="2026-06-01"/></div>
+        <div><label class="fl">Échéance</label><input class="fi" type="date" id="f-mission-fin" value="2026-09-30"/></div>
+        <div><label class="fl">Source</label><select class="fi fs" id="f-mission-source"><option>Réseau Y3</option><option>Réseau Sirius Capital</option><option>Partenaire bancaire</option><option>Référence client</option></select></div>
+        <div><label class="fl">Priorité</label><select class="fi fs" id="f-mission-priorite"><option>Haute</option><option>Normale</option><option>Faible</option></select></div>
+        <div class="fgf"><label class="fl">Description / périmètre</label><textarea class="fi" id="f-mission-desc" rows="3" placeholder="Objectifs et périmètre de la mission..."></textarea></div>
       </div>
     </div>
     <div class="mo-ft">
       <button class="btn btn-ghost" onclick="closeModal('modal-mission')">Annuler</button>
-      <button class="btn btn-primary" onclick="closeModal('modal-mission')">Créer la mission →</button>
+      <button class="btn btn-primary" onclick="createMission()">Créer la mission →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ MODAL : NOUVELLE FACTURE ══ -->
+<div class="mo" id="modal-facture" onclick="if(event.target===this)closeModal('modal-facture')">
+  <div class="modal">
+    <div class="mo-hd"><span class="mo-t">Nouvelle facture</span><span class="mo-x" onclick="closeModal('modal-facture')">✕</span></div>
+    <div class="mo-bd">
+      <div class="fg">
+        <div><label class="fl">Client</label><input class="fi" id="f-facture-client" placeholder="Ex : AGRI-SUD CI"/></div>
+        <div><label class="fl">Mission liée</label><input class="fi" id="f-facture-mission" placeholder="Ex : Levée de fonds — Acompte"/></div>
+        <div><label class="fl">Montant (FCFA)</label><input class="fi" id="f-facture-montant" placeholder="Ex : 1 500 000"/></div>
+        <div><label class="fl">Date d'émission</label><input class="fi" type="date" id="f-facture-date" value="2026-06-16"/></div>
+        <div><label class="fl">Statut</label><select class="fi fs" id="f-facture-statut"><option>En attente</option><option>Encaissée</option></select></div>
+        <div><label class="fl">Mode de facturation</label><select class="fi fs" id="f-facture-mode"><option>Honoraires fixes</option><option>Success fee</option><option>Retainer mensuel</option></select></div>
+      </div>
+    </div>
+    <div class="mo-ft">
+      <button class="btn btn-ghost" onclick="closeModal('modal-facture')">Annuler</button>
+      <button class="btn btn-primary" onclick="createFacture()">Créer la facture →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL : NOUVELLE FORMATION ══ -->
+<div class="mo" id="modal-formation" onclick="if(event.target===this)closeModal('modal-formation')">
+  <div class="modal">
+    <div class="mo-hd"><span class="mo-t">Nouvelle formation Academy</span><span class="mo-x" onclick="closeModal('modal-formation')">✕</span></div>
+    <div class="mo-bd">
+      <div class="fg">
+        <div class="fgf"><label class="fl">Intitulé de la formation</label><input class="fi" id="f-formation-titre" placeholder="Ex : Gouvernance financière PME"/></div>
+        <div class="fgf"><label class="fl">Description</label><input class="fi" id="f-formation-desc" placeholder="Ex : Cadres financiers · Banque & UEMOA"/></div>
+        <div><label class="fl">Format</label><select class="fi fs" id="f-formation-format"><option>Inter-entreprise</option><option>Intra-entreprise</option></select></div>
+        <div><label class="fl">Durée</label><select class="fi fs" id="f-formation-duree"><option>1 jour</option><option>2 jours</option><option>3 jours</option></select></div>
+        <div class="fgf"><label class="fl">Tarif</label><input class="fi" id="f-formation-tarif" placeholder="Ex : 300 K/pers. ou 2 M/session"/></div>
+      </div>
+    </div>
+    <div class="mo-ft">
+      <button class="btn btn-ghost" onclick="closeModal('modal-formation')">Annuler</button>
+      <button class="btn btn-primary" onclick="createFormation()">Créer la formation →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL : NOUVELLE CIBLE INVESTMENT ══ -->
+<div class="mo" id="modal-cible" onclick="if(event.target===this)closeModal('modal-cible')">
+  <div class="modal">
+    <div class="mo-hd"><span class="mo-t">Nouvelle cible Investment</span><span class="mo-x" onclick="closeModal('modal-cible')">✕</span></div>
+    <div class="mo-bd">
+      <div class="fg">
+        <div class="fgf"><label class="fl">Nom de l'entreprise</label><input class="fi" id="f-cible-nom" placeholder="Ex : MECASUD INDUSTRIE"/></div>
+        <div><label class="fl">Localisation</label><input class="fi" id="f-cible-loc" placeholder="Ex : Bouaké"/></div>
+        <div><label class="fl">Secteur</label><select class="fi fs" id="f-cible-secteur"><option>Industrie</option><option>Agro-industrie</option><option>Énergie</option><option>Fintech</option></select></div>
+        <div class="fgf"><label class="fl">Ticket estimé (M FCFA)</label><input class="fi" id="f-cible-ticket" placeholder="Ex : 55"/></div>
+      </div>
+    </div>
+    <div class="mo-ft">
+      <button class="btn btn-ghost" onclick="closeModal('modal-cible')">Annuler</button>
+      <button class="btn btn-primary" onclick="createCible()">Ajouter au pipeline →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ MODAL : NOUVEAU PROSPECT ══ -->
+<div class="mo" id="modal-prospect" onclick="if(event.target===this)closeModal('modal-prospect')">
+  <div class="modal">
+    <div class="mo-hd"><span class="mo-t">Nouveau prospect</span><span class="mo-x" onclick="closeModal('modal-prospect')">✕</span></div>
+    <div class="mo-bd">
+      <div class="fg">
+        <div class="fgf"><label class="fl">Nom de l'entreprise / contact</label><input class="fi" id="f-prospect-nom" placeholder="Ex : PME AGROTECH CI"/></div>
+        <div><label class="fl">Secteur</label><select class="fi fs" id="f-prospect-secteur"><option>Agro-industrie</option><option>Énergie</option><option>Industrie</option><option>Fintech</option><option>Santé</option><option>Immobilier</option><option>Services</option></select></div>
+        <div><label class="fl">Type de mission visé</label><select class="fi fs" id="f-prospect-type"><option>Business Plan</option><option>Levée de fonds</option><option>M&A</option><option>Retainer</option><option>Restructuration</option><option>Diagnostic</option><option>Formation Academy</option></select></div>
+        <div><label class="fl">Honoraires estimés (M FCFA)</label><input class="fi" id="f-prospect-montant" placeholder="Ex : 3"/></div>
+        <div><label class="fl">Source</label><select class="fi fs" id="f-prospect-source"><option>Réseau Y3</option><option>Réseau Sirius Capital</option><option>Partenaire bancaire</option><option>Référence client</option><option>Academy</option><option>Conférence / Event</option><option>Approche directe</option></select></div>
+        <div><label class="fl">Stade initial</label><select class="fi fs" id="f-prospect-stade"><option value="0">Prospection</option><option value="1">Qualification</option><option value="2">Proposition</option></select></div>
+        <div><label class="fl">Contact principal</label><input class="fi" id="f-prospect-contact" placeholder="Ex : M. Koné · DG"/></div>
+        <div><label class="fl">Prochaine action</label><input class="fi" id="f-prospect-action" placeholder="Ex : RDV de présentation le 20 juin"/></div>
+        <div class="fgf"><label class="fl">Notes</label><textarea class="fi" id="f-prospect-notes" rows="2" placeholder="Contexte, enjeux, points d'attention..."></textarea></div>
+      </div>
+    </div>
+    <div class="mo-ft">
+      <button class="btn btn-ghost" onclick="closeModal('modal-prospect')">Annuler</button>
+      <button class="btn btn-primary" onclick="createProspect()">Ajouter au pipeline →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL : NOUVEAU COLLABORATEUR ══ -->
+<div class="mo" id="modal-collaborateur" onclick="if(event.target===this)closeModal('modal-collaborateur')">
+  <div class="modal">
+    <div class="mo-hd"><span class="mo-t">Inviter un collaborateur</span><span class="mo-x" onclick="closeModal('modal-collaborateur')">✕</span></div>
+    <div class="mo-bd">
+      <div class="fg">
+        <div><label class="fl">Prénom</label><input class="fi" id="f-collab-prenom" placeholder="Prénom"/></div>
+        <div><label class="fl">Nom</label><input class="fi" id="f-collab-nom" placeholder="Nom"/></div>
+        <div class="fgf"><label class="fl">Email</label><input class="fi" id="f-collab-email" placeholder="email@kapgrowth.ci" type="email"/></div>
+        <div><label class="fl">Rôle</label><select class="fi fs" id="f-collab-role"><option value="collab">Collaborateur</option><option value="client">Client</option></select></div>
+        <div><label class="fl">Spécialité</label><select class="fi fs" id="f-collab-spec"><option>Analyste financier</option><option>Consultant Advisory</option><option>Chargé de mission</option><option>Formateur Academy</option><option>Client externe</option></select></div>
+        <div><label class="fl">Missions assignées</label><input class="fi" id="f-collab-missions" placeholder="Ex : BP SOLARIS CI, Levée AGRI-SUD"/></div>
+      </div>
+    </div>
+    <div class="mo-ft">
+      <button class="btn btn-ghost" onclick="closeModal('modal-collaborateur')">Annuler</button>
+      <button class="btn btn-primary" onclick="createCollaborateur()">Créer le profil →</button>
     </div>
   </div>
 </div>
@@ -4332,6 +4884,13 @@ function initCharts() {
 
 <script>
 // ══ KAP AI ENGINE ══
+// ══════════════════════════════════════════
+// CONFIGURATION — À MODIFIER UNE FOIS LE PROXY DÉPLOYÉ
+// Remplacez l'URL ci-dessous par celle de votre proxy Vercel
+// Exemple : 'https://kap-ia-proxy.vercel.app/api/chat'
+// ══════════════════════════════════════════
+const KAP_PROXY_URL = 'https://kap-ia-proxy.vercel.app/api/chat';
+
 const KAP_CONTEXT = {
   firm: "KAP Growth & Investment",
   founder: "Augustin Kpantché",
@@ -4473,12 +5032,10 @@ async function sendAIMessage() {
   showTyping();
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch(KAP_PROXY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
         system: AI_MODES[currentMode].system,
         messages: aiMessages
       })
@@ -4486,6 +5043,10 @@ async function sendAIMessage() {
 
     const data = await response.json();
     hideTyping();
+
+    if (data.error) {
+      throw new Error(data.error);
+    }
 
     const reply = data.content && data.content[0] && data.content[0].text
       ? data.content[0].text
@@ -4496,7 +5057,11 @@ async function sendAIMessage() {
 
   } catch (err) {
     hideTyping();
-    addAIMessage('assistant', '⚠️ Erreur de connexion à l'API. Vérifiez votre connexion et réessayez.');
+    if (KAP_PROXY_URL.includes('kap-ia-proxy.vercel.app')) {
+      addAIMessage('assistant', '⚠️ <strong>Assistant IA non configuré.</strong><br><br>Pour activer l\'assistant, déployez le proxy Vercel fourni et remplacez <code>KAP_PROXY_URL</code> dans le code par votre URL réelle.<br><br>En attendant, je peux vous aider directement dans la conversation Claude : décrivez votre besoin et je rédigerai la réponse à intégrer manuellement.');
+    } else {
+      addAIMessage('assistant', '⚠️ Erreur de connexion au proxy IA. Vérifiez que le service est actif et réessayez.');
+    }
     console.error('KAP AI Error:', err);
   }
 
@@ -4832,6 +5397,1286 @@ window.nav = function(id, el) {
   }
   originalNav(id, el);
 };
+</script>
+
+
+<!-- ══════════ KAP DATA ENGINE — Formulaires fonctionnels ══════════ -->
+<style>
+.toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--navy); color: var(--white);
+  padding: 11px 20px; border-radius: var(--r-lg);
+  font-size: 12.5px; font-weight: 500;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 8px 24px rgba(13,24,41,.2);
+  z-index: 700; opacity: 0; pointer-events: none;
+  transition: all .25s ease;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast i { color: var(--ok); font-size: 15px; }
+.toast.toast-error i { color: var(--danger); }
+
+.row-new { animation: rowHighlight 2s ease; }
+@keyframes rowHighlight {
+  0%   { background: var(--accent-pale); }
+  100% { background: transparent; }
+}
+
+.empty-row td {
+  text-align: center; padding: 28px 16px;
+  color: var(--slate); font-size: 12px;
+}
+</style>
+
+<div class="toast" id="kap-toast">
+  <i class="ti ti-circle-check"></i>
+  <span id="kap-toast-text">Enregistré</span>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// KAP DATA ENGINE — Persistance locale (localStorage)
+// Préfixe : kap_v1_
+// À remplacer par Supabase quand disponible
+// ══════════════════════════════════════════
+
+const KAP_STORE_KEYS = {
+  missions: 'kap_v1_missions',
+  contacts: 'kap_v1_contacts'
+};
+
+function kapLoad(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    console.error('KAP Store read error:', e);
+    return [];
+  }
+}
+
+function kapSave(key, data) {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+    return true;
+  } catch (e) {
+    console.error('KAP Store write error:', e);
+    return false;
+  }
+}
+
+function kapToast(text, isError) {
+  const t = document.getElementById('kap-toast');
+  const txt = document.getElementById('kap-toast-text');
+  txt.textContent = text;
+  t.classList.toggle('toast-error', !!isError);
+  t.querySelector('i').className = isError ? 'ti ti-alert-triangle' : 'ti ti-circle-check';
+  t.classList.add('show');
+  clearTimeout(window._kapToastTimer);
+  window._kapToastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function kapFmtFCFA(val) {
+  const n = parseFloat(String(val).replace(/[^0-9.]/g, ''));
+  if (isNaN(n)) return val || '—';
+  if (n >= 1000000) return (n/1000000).toLocaleString('fr-FR', {maximumFractionDigits:1}) + ' M';
+  if (n >= 1000) return (n/1000).toLocaleString('fr-FR', {maximumFractionDigits:0}) + ' K';
+  return n.toLocaleString('fr-FR');
+}
+
+function kapFmtDate(dateStr) {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr);
+  if (isNaN(d)) return dateStr;
+  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function kapEscapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+
+// ══════════════════════════════════════════
+// MISSIONS
+// ══════════════════════════════════════════
+
+const MISSION_TYPE_BADGE = {
+  'Levée de fonds': 'b-gold',
+  'Business Plan': 'b-blue',
+  'M&A': 'b-blue',
+  'Retainer': 'b-green',
+  'Restructuration': 'b-gray',
+  'PPP / Project Finance': 'b-navy'
+};
+
+function createMission() {
+  const nom = document.getElementById('f-mission-nom').value.trim();
+  const client = document.getElementById('f-mission-client').value.trim();
+
+  if (!nom || !client) {
+    kapToast('Veuillez renseigner au moins le nom de la mission et le client.', true);
+    return;
+  }
+
+  const mission = {
+    id: 'm_' + Date.now(),
+    nom: nom,
+    client: client,
+    secteur: document.getElementById('f-mission-secteur').value,
+    type: document.getElementById('f-mission-type').value,
+    honoraires: document.getElementById('f-mission-honoraires').value.trim(),
+    facturation: document.getElementById('f-mission-facturation').value,
+    debut: document.getElementById('f-mission-debut').value,
+    fin: document.getElementById('f-mission-fin').value,
+    source: document.getElementById('f-mission-source').value,
+    priorite: document.getElementById('f-mission-priorite').value,
+    description: document.getElementById('f-mission-desc').value.trim(),
+    statut: 'En cours',
+    createdAt: new Date().toISOString()
+  };
+
+  const missions = kapLoad(KAP_STORE_KEYS.missions);
+  missions.unshift(mission);
+  kapSave(KAP_STORE_KEYS.missions, missions);
+
+  renderMissions();
+  updateMissionsBadge();
+  closeModal('modal-mission');
+  clearMissionForm();
+  kapToast(`Mission "${nom}" créée avec succès`);
+}
+
+function clearMissionForm() {
+  ['f-mission-nom','f-mission-client','f-mission-honoraires','f-mission-desc'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+}
+
+function renderMissions() {
+  const missions = kapLoad(KAP_STORE_KEYS.missions);
+  const tbody = document.getElementById('missions-tbody');
+  if (!tbody) return;
+
+  // Supprimer les anciennes lignes ajoutées dynamiquement
+  tbody.querySelectorAll('tr[data-kap-mission]').forEach(tr => tr.remove());
+
+  // Insérer les nouvelles missions en haut
+  missions.forEach(m => {
+    const badgeClass = MISSION_TYPE_BADGE[m.type] || 'b-gray';
+    const honoraires = m.honoraires ? kapFmtFCFA(m.honoraires) + ' FCFA' : '—';
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-kap-mission', m.id);
+    tr.className = 'row-new';
+    tr.innerHTML = `
+      <td><div class="dn">${kapEscapeHtml(m.nom)}</div><div class="dm">${kapEscapeHtml(m.secteur)} · ${kapEscapeHtml(m.client)}</div></td>
+      <td><span class="badge ${badgeClass}">${kapEscapeHtml(m.type)}</span></td>
+      <td class="num" style="color:var(--accent)">${honoraires}${m.facturation ? `<div style="font-size:10px;color:var(--slate);font-weight:400">${kapEscapeHtml(m.facturation)}</div>` : ''}</td>
+      <td style="font-size:11px;color:var(--slate)">${kapEscapeHtml(m.source)}</td>
+      <td style="font-size:11px;color:var(--slate)">${kapFmtDate(m.fin)}</td>
+      <td><span class="badge b-orange">${kapEscapeHtml(m.statut)}</span></td>
+      <td><span class="ca" onclick="deleteMission('${m.id}')" style="color:var(--danger)"><i class="ti ti-trash"></i></span></td>
+    `;
+    tbody.insertBefore(tr, tbody.firstChild);
+  });
+}
+
+function deleteMission(id) {
+  let missions = kapLoad(KAP_STORE_KEYS.missions);
+  missions = missions.filter(m => m.id !== id);
+  kapSave(KAP_STORE_KEYS.missions, missions);
+  renderMissions();
+  updateMissionsBadge();
+  kapToast('Mission supprimée');
+}
+
+function updateMissionsBadge() {
+  const missions = kapLoad(KAP_STORE_KEYS.missions);
+  const badge = document.getElementById('missions-badge');
+  if (badge) badge.textContent = 5 + missions.length;
+}
+
+// ══════════════════════════════════════════
+// CONTACTS CRM
+// ══════════════════════════════════════════
+
+const SECTOR_BADGE = {
+  'Agro-industrie': 'b-green', 'Énergie': 'b-blue', 'Industrie': 'b-gray',
+  'Fintech': 'b-gold', 'Santé': 'b-navy', 'Services': 'b-gray', 'Immobilier': 'b-blue'
+};
+
+function createContact() {
+  const nom = document.getElementById('f-contact-nom').value.trim();
+  const org = document.getElementById('f-contact-org').value.trim();
+
+  if (!nom || !org) {
+    kapToast('Veuillez renseigner au moins le nom et l\'organisation.', true);
+    return;
+  }
+
+  const contact = {
+    id: 'c_' + Date.now(),
+    nom: nom,
+    organisation: org,
+    fonction: document.getElementById('f-contact-fonction').value.trim(),
+    provenance: document.getElementById('f-contact-provenance').value,
+    telephone: document.getElementById('f-contact-tel').value.trim(),
+    createdAt: new Date().toISOString()
+  };
+
+  const contacts = kapLoad(KAP_STORE_KEYS.contacts);
+  contacts.unshift(contact);
+  kapSave(KAP_STORE_KEYS.contacts, contacts);
+
+  renderContacts();
+  clearContactForm();
+  kapToast(`Contact "${nom}" ajouté au CRM`);
+}
+
+function clearContactForm() {
+  ['f-contact-nom','f-contact-org','f-contact-fonction','f-contact-tel'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+}
+
+function renderContacts() {
+  const contacts = kapLoad(KAP_STORE_KEYS.contacts);
+  const tbody = document.getElementById('crm-tbody');
+  if (!tbody) return;
+
+  tbody.querySelectorAll('tr[data-kap-contact]').forEach(tr => tr.remove());
+
+  contacts.forEach(c => {
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-kap-contact', c.id);
+    tr.className = 'row-new';
+    tr.innerHTML = `
+      <td><div class="dn">${kapEscapeHtml(c.organisation)}</div><div class="dm">${kapEscapeHtml(c.nom)}${c.fonction ? ' · ' + kapEscapeHtml(c.fonction) : ''}</div></td>
+      <td style="font-size:11px;color:var(--slate)">${kapEscapeHtml(c.provenance)}</td>
+      <td><span class="badge b-gray">Nouveau</span></td>
+      <td style="font-size:11px">À l'instant</td>
+      <td><span class="badge b-blue">Prospect</span></td>
+      <td><span class="ca" onclick="deleteContact('${c.id}')" style="color:var(--danger)"><i class="ti ti-trash"></i></span></td>
+    `;
+    tbody.insertBefore(tr, tbody.firstChild);
+  });
+
+  // Mettre à jour le KPI "Clients actifs" / "Contacts réseau"
+  const kpiContacts = document.querySelector('#pg-crm .kpi.ok .kpi-v');
+  if (kpiContacts) kpiContacts.textContent = (147 + contacts.length).toString();
+}
+
+function deleteContact(id) {
+  let contacts = kapLoad(KAP_STORE_KEYS.contacts);
+  contacts = contacts.filter(c => c.id !== id);
+  kapSave(KAP_STORE_KEYS.contacts, contacts);
+  renderContacts();
+  kapToast('Contact supprimé');
+}
+
+// ══════════════════════════════════════════
+// FACTURES
+// ══════════════════════════════════════════
+
+KAP_STORE_KEYS.factures = 'kap_v1_factures';
+
+function nextFactureNumber() {
+  const factures = kapLoad(KAP_STORE_KEYS.factures);
+  return 'KAP-2026-' + String(6 + factures.length).padStart(3, '0');
+}
+
+function createFacture() {
+  const client = document.getElementById('f-facture-client').value.trim();
+  const montant = document.getElementById('f-facture-montant').value.trim();
+
+  if (!client || !montant) {
+    kapToast('Veuillez renseigner au moins le client et le montant.', true);
+    return;
+  }
+
+  const facture = {
+    id: 'fa_' + Date.now(),
+    numero: nextFactureNumber(),
+    client: client,
+    mission: document.getElementById('f-facture-mission').value.trim() || '—',
+    montant: montant,
+    date: document.getElementById('f-facture-date').value,
+    statut: document.getElementById('f-facture-statut').value,
+    mode: document.getElementById('f-facture-mode').value,
+    createdAt: new Date().toISOString()
+  };
+
+  const factures = kapLoad(KAP_STORE_KEYS.factures);
+  factures.unshift(facture);
+  kapSave(KAP_STORE_KEYS.factures, factures);
+
+  renderFactures();
+  closeModal('modal-facture');
+  ['f-facture-client','f-facture-mission','f-facture-montant'].forEach(id => document.getElementById(id).value = '');
+  kapToast(`Facture ${facture.numero} créée`);
+}
+
+function renderFactures() {
+  const factures = kapLoad(KAP_STORE_KEYS.factures);
+  const tbody = document.getElementById('factures-tbody');
+  if (!tbody) return;
+  tbody.querySelectorAll('tr[data-kap-facture]').forEach(tr => tr.remove());
+
+  factures.forEach(f => {
+    const badgeClass = f.statut === 'Encaissée' ? 'b-green' : 'b-orange';
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-kap-facture', f.id);
+    tr.className = 'row-new';
+    tr.innerHTML = `
+      <td style="font-weight:600">${kapEscapeHtml(f.numero)}</td>
+      <td><div class="dn">${kapEscapeHtml(f.client)}</div></td>
+      <td style="font-size:11px">${kapEscapeHtml(f.mission)}</td>
+      <td class="num" style="color:var(--accent);font-weight:600">${kapFmtFCFA(f.montant)}</td>
+      <td style="font-size:11px">${kapFmtDate(f.date)}</td>
+      <td><span class="badge ${badgeClass}">${kapEscapeHtml(f.statut)}</span></td>
+    `;
+    tbody.insertBefore(tr, tbody.firstChild);
+  });
+}
+
+// ══════════════════════════════════════════
+// FORMATIONS ACADEMY
+// ══════════════════════════════════════════
+
+KAP_STORE_KEYS.formations = 'kap_v1_formations';
+
+function createFormation() {
+  const titre = document.getElementById('f-formation-titre').value.trim();
+  if (!titre) {
+    kapToast('Veuillez renseigner l\'intitulé de la formation.', true);
+    return;
+  }
+
+  const formation = {
+    id: 'fo_' + Date.now(),
+    titre: titre,
+    description: document.getElementById('f-formation-desc').value.trim() || '—',
+    format: document.getElementById('f-formation-format').value,
+    duree: document.getElementById('f-formation-duree').value,
+    tarif: document.getElementById('f-formation-tarif').value.trim() || '—',
+    createdAt: new Date().toISOString()
+  };
+
+  const formations = kapLoad(KAP_STORE_KEYS.formations);
+  formations.unshift(formation);
+  kapSave(KAP_STORE_KEYS.formations, formations);
+
+  renderFormations();
+  closeModal('modal-formation');
+  ['f-formation-titre','f-formation-desc','f-formation-tarif'].forEach(id => document.getElementById(id).value = '');
+  kapToast(`Formation "${titre}" ajoutée au catalogue`);
+}
+
+function renderFormations() {
+  const formations = kapLoad(KAP_STORE_KEYS.formations);
+  const tbody = document.getElementById('formations-tbody');
+  if (!tbody) return;
+  tbody.querySelectorAll('tr[data-kap-formation]').forEach(tr => tr.remove());
+
+  formations.forEach(f => {
+    const badgeFormat = f.format === 'Intra-entreprise' ? 'b-blue' : 'b-gold';
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-kap-formation', f.id);
+    tr.className = 'row-new';
+    tr.innerHTML = `
+      <td><div class="dn">${kapEscapeHtml(f.titre)}</div><div class="dm">${kapEscapeHtml(f.description)}</div></td>
+      <td><span class="badge ${badgeFormat}">${kapEscapeHtml(f.format)}</span></td>
+      <td style="font-size:11px">${kapEscapeHtml(f.duree)}</td>
+      <td class="num" style="color:var(--accent)">${kapEscapeHtml(f.tarif)}</td>
+      <td><span class="badge b-orange">Nouvelle</span></td>
+    `;
+    tbody.insertBefore(tr, tbody.firstChild);
+  });
+}
+
+// ══════════════════════════════════════════
+// CIBLES INVESTMENT
+// ══════════════════════════════════════════
+
+KAP_STORE_KEYS.cibles = 'kap_v1_cibles';
+
+const SECTOR_BADGE_INV = { 'Industrie': 'b-gray', 'Agro-industrie': 'b-green', 'Énergie': 'b-blue', 'Fintech': 'b-gold' };
+
+function createCible() {
+  const nom = document.getElementById('f-cible-nom').value.trim();
+  if (!nom) {
+    kapToast('Veuillez renseigner le nom de l\'entreprise.', true);
+    return;
+  }
+
+  const cible = {
+    id: 'ci_' + Date.now(),
+    nom: nom,
+    localisation: document.getElementById('f-cible-loc').value.trim() || '—',
+    secteur: document.getElementById('f-cible-secteur').value,
+    ticket: document.getElementById('f-cible-ticket').value.trim() || '—',
+    createdAt: new Date().toISOString()
+  };
+
+  const cibles = kapLoad(KAP_STORE_KEYS.cibles);
+  cibles.unshift(cible);
+  kapSave(KAP_STORE_KEYS.cibles, cibles);
+
+  renderCibles();
+  closeModal('modal-cible');
+  ['f-cible-nom','f-cible-loc','f-cible-ticket'].forEach(id => document.getElementById(id).value = '');
+  kapToast(`"${nom}" ajoutée au pipeline — Prospection`);
+}
+
+function renderCibles() {
+  const cibles = kapLoad(KAP_STORE_KEYS.cibles);
+  const body = document.getElementById('kb-prospection-body');
+  if (!body) return;
+  body.querySelectorAll('.kb-card[data-kap-cible]').forEach(c => c.remove());
+
+  cibles.forEach(c => {
+    const badgeClass = SECTOR_BADGE_INV[c.secteur] || 'b-gray';
+    const card = document.createElement('div');
+    card.className = 'kb-card row-new';
+    card.setAttribute('data-kap-cible', c.id);
+    card.innerHTML = `
+      <div class="kb-cn">${kapEscapeHtml(c.nom)}</div>
+      <div class="kb-cm">${kapEscapeHtml(c.localisation)} · ${kapEscapeHtml(c.secteur)}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:5px">
+        <span class="badge ${badgeClass}">${kapEscapeHtml(c.secteur)}</span>
+        <span class="kb-ca">~${kapEscapeHtml(c.ticket)} M</span>
+      </div>
+    `;
+    body.insertBefore(card, body.firstChild);
+  });
+}
+
+// ══════════════════════════════════════════
+// INITIALISATION — Au chargement de la page
+// ══════════════════════════════════════════
+function kapInitAllData() {
+  renderMissions();
+  renderContacts();
+  renderFactures();
+  renderFormations();
+  renderCibles();
+  updateMissionsBadge();
+}
+
+document.addEventListener('DOMContentLoaded', kapInitAllData);
+if (document.readyState !== 'loading') {
+  kapInitAllData();
+}
+</script>
+
+
+<!-- ══════════ KAP DROPDOWN ENGINE — Options personnalisées ══════════ -->
+<style>
+/* ── Mini modal "Ajouter une option" ── */
+#kap-opt-modal {
+  display: none; position: fixed; inset: 0;
+  background: rgba(8,14,26,.55); z-index: 800;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(2px);
+}
+#kap-opt-modal.open { display: flex; }
+.kap-opt-box {
+  background: var(--white); border-radius: var(--r-lg);
+  width: 360px; box-shadow: 0 24px 64px rgba(0,0,0,.2);
+  border: 1px solid var(--surface-3);
+  padding: 20px 22px;
+}
+.kap-opt-title {
+  font-family: var(--font-display); font-size: 16px;
+  color: var(--navy); margin-bottom: 4px;
+}
+.kap-opt-sub { font-size: 11px; color: var(--slate); margin-bottom: 14px; }
+.kap-opt-input {
+  width: 100%; border: 1px solid var(--surface-3); border-radius: var(--r);
+  padding: 9px 12px; font-family: var(--font-body); font-size: 13px;
+  color: var(--navy); background: var(--surface); outline: none;
+  transition: border-color .12s, background .12s; margin-bottom: 14px;
+}
+.kap-opt-input:focus { border-color: var(--accent); background: var(--white); }
+.kap-opt-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+/* ── Option spéciale dans les selects ── */
+option.kap-opt-add { color: var(--accent); font-weight: 500; font-style: italic; }
+</style>
+
+<div id="kap-opt-modal" onclick="if(event.target===this) kapCloseOptModal()">
+  <div class="kap-opt-box">
+    <div class="kap-opt-title">Ajouter une option</div>
+    <div class="kap-opt-sub" id="kap-opt-field-label">Nouvelle valeur pour cette liste</div>
+    <input class="kap-opt-input" id="kap-opt-input" placeholder="Saisir la nouvelle valeur..."
+      onkeydown="if(event.key==='Enter') kapConfirmOption()"/>
+    <div class="kap-opt-actions">
+      <button class="btn btn-ghost" onclick="kapCloseOptModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="kapConfirmOption()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// KAP DROPDOWN ENGINE
+// Ajoute "+ Ajouter une option..." à tous les <select class="fi fs">
+// de formulaire (hors filtres de tableau) et persiste les ajouts
+// dans localStorage, par liste identifiée par sa première option.
+// ══════════════════════════════════════════
+
+const KAP_DROPDOWN_KEY = 'kap_v1_custom_options';
+let kapActiveSelect = null;
+
+function kapLoadCustomOptions() {
+  try {
+    const raw = localStorage.getItem(KAP_DROPDOWN_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) { return {}; }
+}
+
+function kapSaveCustomOptions(data) {
+  try { localStorage.setItem(KAP_DROPDOWN_KEY, JSON.stringify(data)); } catch (e) {}
+}
+
+// Génère une clé stable pour un select à partir de son id ou de sa 1ère option
+function kapSelectKey(select) {
+  if (select.id) return 'id:' + select.id;
+  const firstOpt = select.querySelector('option');
+  const label = select.closest('.fgf, .form-group, div')?.previousElementSibling?.textContent
+    || (firstOpt ? firstOpt.textContent : 'select');
+  return 'opt:' + (firstOpt ? firstOpt.textContent.trim() : label.trim());
+}
+
+const ADD_OPTION_VALUE = '__kap_add_option__';
+
+function kapEnhanceSelect(select) {
+  // Exclure les filtres de tableau (identifiés par leur 1ère option)
+  const firstOptText = select.querySelector('option')?.textContent.trim() || '';
+  const excluded = ['Tous statuts', 'Vue 1', 'Vue détaillée'];
+  if (excluded.includes(firstOptText)) return;
+  if (select.dataset.kapEnhanced) return;
+
+  select.dataset.kapEnhanced = '1';
+  const key = kapSelectKey(select);
+  select.dataset.kapKey = key;
+
+  // Restaurer les options personnalisées déjà enregistrées
+  const custom = kapLoadCustomOptions();
+  if (custom[key]) {
+    custom[key].forEach(val => {
+      if (![...select.options].some(o => o.value === val)) {
+        const opt = document.createElement('option');
+        opt.value = val; opt.textContent = val;
+        // Insérer avant la dernière option (qui sera "+ Ajouter")
+        select.appendChild(opt);
+      }
+    });
+  }
+
+  // Ajouter l'option spéciale "+ Ajouter une option..."
+  const addOpt = document.createElement('option');
+  addOpt.value = ADD_OPTION_VALUE;
+  addOpt.textContent = '+ Ajouter une option...';
+  addOpt.className = 'kap-opt-add';
+  select.appendChild(addOpt);
+
+  // Mémoriser la valeur précédente pour pouvoir annuler
+  select.dataset.kapPrevValue = select.value;
+
+  select.addEventListener('change', function() {
+    if (this.value === ADD_OPTION_VALUE) {
+      kapOpenOptModal(this);
+    } else {
+      this.dataset.kapPrevValue = this.value;
+    }
+  });
+}
+
+function kapOpenOptModal(select) {
+  kapActiveSelect = select;
+  const label = select.closest('div')?.parentElement?.querySelector('label.fl')?.textContent
+    || select.closest('.fg, .form-grid')?.querySelector('label.fl')?.textContent
+    || 'cette liste';
+
+  document.getElementById('kap-opt-field-label').textContent =
+    `Nouvelle valeur pour « ${label} »`;
+  document.getElementById('kap-opt-input').value = '';
+  document.getElementById('kap-opt-modal').classList.add('open');
+  setTimeout(() => document.getElementById('kap-opt-input').focus(), 50);
+}
+
+function kapCloseOptModal() {
+  document.getElementById('kap-opt-modal').classList.remove('open');
+  if (kapActiveSelect) {
+    // Revenir à la valeur précédente si annulation
+    kapActiveSelect.value = kapActiveSelect.dataset.kapPrevValue || kapActiveSelect.options[0].value;
+    kapActiveSelect = null;
+  }
+}
+
+function kapConfirmOption() {
+  const input = document.getElementById('kap-opt-input');
+  const val = input.value.trim();
+  if (!val || !kapActiveSelect) { kapCloseOptModal(); return; }
+
+  const select = kapActiveSelect;
+  const key = select.dataset.kapKey;
+
+  // Éviter les doublons
+  const exists = [...select.options].some(o => o.value.toLowerCase() === val.toLowerCase());
+  if (!exists) {
+    const opt = document.createElement('option');
+    opt.value = val; opt.textContent = val;
+    // Insérer avant l'option "+ Ajouter"
+    const addOpt = select.querySelector('option.kap-opt-add');
+    select.insertBefore(opt, addOpt);
+
+    // Persister
+    const custom = kapLoadCustomOptions();
+    custom[key] = custom[key] || [];
+    if (!custom[key].includes(val)) custom[key].push(val);
+    kapSaveCustomOptions(custom);
+  }
+
+  select.value = val;
+  select.dataset.kapPrevValue = val;
+  document.getElementById('kap-opt-modal').classList.remove('open');
+  kapActiveSelect = null;
+  kapToast(`Option "${val}" ajoutée à la liste`);
+}
+
+function kapEnhanceAllSelects() {
+  document.querySelectorAll('select.fi.fs').forEach(kapEnhanceSelect);
+}
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', kapEnhanceAllSelects);
+if (document.readyState !== 'loading') kapEnhanceAllSelects();
+
+// Ré-appliquer quand on navigue (certaines pages sont déjà dans le DOM mais au cas où)
+const _origNav = window.nav;
+if (typeof _origNav === 'function') {
+  window.nav = function(id, el) {
+    _origNav(id, el);
+    setTimeout(kapEnhanceAllSelects, 50);
+  };
+}
+</script>
+
+
+<!-- ══════════ PIPELINE + COLLABORATEURS + PDF ENGINE ══════════ -->
+<script>
+// ══════════════════════════════════════════
+// PIPELINE COMMERCIAL
+// ══════════════════════════════════════════
+
+KAP_STORE_KEYS.prospects = 'kap_v1_prospects';
+
+const PIPE_STAGES = ['Prospection','Qualification','Proposition','Négociation','Closing'];
+const PIPE_BADGE  = ['b-gray','b-blue','b-orange','b-gold','b-green'];
+let pipelineViewKanban = true;
+
+function togglePipelineView() {
+  pipelineViewKanban = !pipelineViewKanban;
+  document.getElementById('pipeline-kanban').style.display = pipelineViewKanban ? 'block' : 'none';
+  document.getElementById('pipeline-liste').style.display  = pipelineViewKanban ? 'none'  : 'block';
+  document.getElementById('pipeline-view-lbl').textContent = pipelineViewKanban ? 'Vue liste' : 'Vue Kanban';
+}
+
+function createProspect() {
+  const nom = document.getElementById('f-prospect-nom').value.trim();
+  if (!nom) { kapToast('Veuillez renseigner le nom du prospect.', true); return; }
+
+  const prospect = {
+    id: 'p_' + Date.now(),
+    nom: nom,
+    secteur: document.getElementById('f-prospect-secteur').value,
+    type: document.getElementById('f-prospect-type').value,
+    montant: document.getElementById('f-prospect-montant').value.trim(),
+    source: document.getElementById('f-prospect-source').value,
+    stade: parseInt(document.getElementById('f-prospect-stade').value),
+    contact: document.getElementById('f-prospect-contact').value.trim(),
+    action: document.getElementById('f-prospect-action').value.trim(),
+    notes: document.getElementById('f-prospect-notes').value.trim(),
+    createdAt: new Date().toISOString()
+  };
+
+  const prospects = kapLoad(KAP_STORE_KEYS.prospects);
+  prospects.unshift(prospect);
+  kapSave(KAP_STORE_KEYS.prospects, prospects);
+
+  renderPipeline();
+  closeModal('modal-prospect');
+  ['f-prospect-nom','f-prospect-montant','f-prospect-contact','f-prospect-action','f-prospect-notes']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  kapToast(`"${nom}" ajouté au pipeline · ${PIPE_STAGES[prospect.stade]}`);
+}
+
+function moveProspect(id, dir) {
+  let prospects = kapLoad(KAP_STORE_KEYS.prospects);
+  const p = prospects.find(x => x.id === id);
+  if (!p) return;
+  p.stade = Math.max(0, Math.min(4, p.stade + dir));
+  kapSave(KAP_STORE_KEYS.prospects, prospects);
+  renderPipeline();
+  kapToast(`Déplacé vers : ${PIPE_STAGES[p.stade]}`);
+}
+
+function deleteProspect(id) {
+  if (!confirm('Supprimer ce prospect du pipeline ?')) return;
+  let prospects = kapLoad(KAP_STORE_KEYS.prospects);
+  prospects = prospects.filter(x => x.id !== id);
+  kapSave(KAP_STORE_KEYS.prospects, prospects);
+  renderPipeline();
+  kapToast('Prospect supprimé');
+}
+
+function renderPipeline() {
+  const prospects = kapLoad(KAP_STORE_KEYS.prospects);
+
+  // KPIs
+  document.getElementById('kpi-pipe-total').textContent   = prospects.length;
+  document.getElementById('kpi-pipe-qualif').textContent  = prospects.filter(p => p.stade === 1).length;
+  document.getElementById('kpi-pipe-prop').textContent    = prospects.filter(p => p.stade === 2).length;
+  document.getElementById('kpi-pipe-closing').textContent = prospects.filter(p => p.stade === 4).length;
+
+  // Kanban
+  for (let s = 0; s < 5; s++) {
+    const col = document.getElementById('kb-pipe-' + s);
+    if (!col) continue;
+    const inStage = prospects.filter(p => p.stade === s);
+    document.getElementById('kb-pipe-count-' + s).textContent = '(' + inStage.length + ')';
+
+    col.innerHTML = '';
+    if (inStage.length === 0) {
+      col.innerHTML = '<div class="empty" style="padding:16px 8px"><i class="ti ti-inbox" style="font-size:20px"></i><div style="font-size:11px">Aucun prospect</div></div>';
+    } else {
+      inStage.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'kb-card';
+        card.innerHTML = `
+          <div class="kb-cn">${kapEscapeHtml(p.nom)}</div>
+          <div class="kb-cm">${kapEscapeHtml(p.secteur)} · ${kapEscapeHtml(p.type)}</div>
+          ${p.montant ? '<div class="kb-ca">~' + kapEscapeHtml(p.montant) + ' M FCFA</div>' : ''}
+          ${p.action ? '<div style="font-size:10px;color:var(--slate);margin-top:4px;border-top:1px solid var(--surface-2);padding-top:4px">⟶ ' + kapEscapeHtml(p.action) + '</div>' : ''}
+          <div style="display:flex;gap:5px;margin-top:7px">
+            ${p.stade > 0 ? '<button onclick="moveProspect('' + p.id + '',-1)" class="btn btn-ghost" style="padding:3px 7px;font-size:10px;flex:1">◀</button>' : ''}
+            ${p.stade < 4 ? '<button onclick="moveProspect('' + p.id + '',1)" class="btn btn-primary" style="padding:3px 7px;font-size:10px;flex:1">▶</button>' : ''}
+            <button onclick="deleteProspect('' + p.id + '')" class="btn btn-ghost" style="padding:3px 7px;font-size:10px;color:var(--danger)"><i class="ti ti-trash"></i></button>
+          </div>`;
+        col.appendChild(card);
+      });
+    }
+  }
+
+  // Vue liste
+  const tbody = document.getElementById('pipeline-liste-tbody');
+  if (tbody) {
+    tbody.innerHTML = '';
+    if (prospects.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--slate);padding:24px;font-size:12px">Aucun prospect — cliquez "+ Nouveau prospect"</td></tr>';
+    } else {
+      prospects.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><div class="dn">${kapEscapeHtml(p.nom)}</div><div class="dm">${kapEscapeHtml(p.contact || '—')}</div></td>
+          <td><span class="badge b-blue">${kapEscapeHtml(p.type)}</span></td>
+          <td class="num" style="color:var(--accent)">${p.montant ? p.montant + ' M' : '—'}</td>
+          <td style="font-size:11px;color:var(--slate)">${kapEscapeHtml(p.source)}</td>
+          <td><span class="badge ${PIPE_BADGE[p.stade]}">${PIPE_STAGES[p.stade]}</span></td>
+          <td style="font-size:11px;color:var(--slate)">${kapEscapeHtml(p.action || '—')}</td>
+          <td style="display:flex;gap:4px">
+            ${p.stade < 4 ? '<button onclick="moveProspect('' + p.id + '',1)" class="btn btn-primary" style="padding:3px 9px;font-size:10px">▶</button>' : ''}
+            <button onclick="deleteProspect('' + p.id + '')" class="btn btn-ghost" style="padding:3px 9px;font-size:10px;color:var(--danger)"><i class="ti ti-trash"></i></button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    }
+  }
+}
+
+// ══════════════════════════════════════════
+// COLLABORATEURS
+// ══════════════════════════════════════════
+
+KAP_STORE_KEYS.collaborateurs = 'kap_v1_collaborateurs';
+
+const ROLE_LABELS = { admin: 'Admin', collab: 'Collaborateur', client: 'Client' };
+const ROLE_CSS    = { admin: 'role-admin', collab: 'role-collab', client: 'role-client' };
+const INITIALS = n => n.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+const COLORS   = ['#1A5FA8','#1E6B48','#B86A10','#5A2DA8','#A8362D','#2D7AA8'];
+
+function createCollaborateur() {
+  // Formulaire quick ou modal complet
+  const fromModal = !!document.getElementById('f-collab-prenom').value;
+  const prenom = fromModal
+    ? document.getElementById('f-collab-prenom').value.trim()
+    : document.getElementById('f-collab-nom-quick').value.trim().split(' ')[0];
+  const nom = fromModal
+    ? document.getElementById('f-collab-nom').value.trim()
+    : document.getElementById('f-collab-nom-quick').value.trim().split(' ').slice(1).join(' ');
+  const email = fromModal
+    ? document.getElementById('f-collab-email').value.trim()
+    : document.getElementById('f-collab-email-quick').value.trim();
+  const role = fromModal
+    ? document.getElementById('f-collab-role').value
+    : document.getElementById('f-collab-role-quick').value;
+  const spec = fromModal
+    ? document.getElementById('f-collab-spec').value
+    : document.getElementById('f-collab-spec-quick').value;
+  const missions = fromModal
+    ? document.getElementById('f-collab-missions').value.trim()
+    : '';
+  const nomComplet = (prenom + ' ' + nom).trim();
+
+  if (!nomComplet || !email) { kapToast('Veuillez renseigner le nom et l'email.', true); return; }
+
+  const collabs = kapLoad(KAP_STORE_KEYS.collaborateurs);
+  const collab = {
+    id: 'co_' + Date.now(),
+    nom: nomComplet,
+    email: email,
+    role: role,
+    specialite: spec,
+    missions: missions,
+    couleur: COLORS[collabs.length % COLORS.length],
+    createdAt: new Date().toISOString()
+  };
+
+  collabs.unshift(collab);
+  kapSave(KAP_STORE_KEYS.collaborateurs, collabs);
+
+  renderCollaborateurs();
+  if (fromModal) closeModal('modal-collaborateur');
+  ['f-collab-prenom','f-collab-nom','f-collab-email','f-collab-missions',
+   'f-collab-nom-quick','f-collab-email-quick'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  kapToast(`${nomComplet} ajouté(e) · ${ROLE_LABELS[role]}`);
+}
+
+function deleteCollaborateur(id) {
+  if (!confirm('Retirer ce membre de l'équipe ?')) return;
+  let collabs = kapLoad(KAP_STORE_KEYS.collaborateurs);
+  collabs = collabs.filter(c => c.id !== id);
+  kapSave(KAP_STORE_KEYS.collaborateurs, collabs);
+  renderCollaborateurs();
+  kapToast('Membre retiré');
+}
+
+function renderCollaborateurs() {
+  const collabs = kapLoad(KAP_STORE_KEYS.collaborateurs);
+  const tbody = document.getElementById('collab-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  collabs.forEach(c => {
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-top:1px solid var(--surface-2)';
+    div.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="av" style="background:${c.couleur};color:#fff;border-color:transparent">${INITIALS(c.nom)}</div>
+        <div>
+          <div class="dn">${kapEscapeHtml(c.nom)}</div>
+          <div class="dm">${kapEscapeHtml(c.email)}</div>
+          ${c.missions ? '<div style="font-size:10px;color:var(--accent);margin-top:2px">Missions : ' + kapEscapeHtml(c.missions) + '</div>' : ''}
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="badge b-gray">${kapEscapeHtml(c.specialite)}</span>
+        <span class="role-badge ${ROLE_CSS[c.role]}">${ROLE_LABELS[c.role]}</span>
+        <button onclick="deleteCollaborateur('${c.id}')" class="btn btn-ghost" style="padding:4px 8px;font-size:11px;color:var(--danger)"><i class="ti ti-trash"></i></button>
+      </div>`;
+    tbody.appendChild(div);
+  });
+
+  // KPIs
+  const total = document.getElementById('kpi-collab-total');
+  const collabCount = document.getElementById('kpi-collab-count');
+  const clientCount = document.getElementById('kpi-client-count');
+  if (total) total.textContent = 1 + collabs.length;
+  if (collabCount) collabCount.textContent = collabs.filter(c => c.role === 'collab').length;
+  if (clientCount) clientCount.textContent = 1 + collabs.filter(c => c.role === 'client').length;
+}
+
+// ══════════════════════════════════════════
+// EXPORTS PDF — Génération depuis le navigateur
+// ══════════════════════════════════════════
+
+function exportPDF(type, data) {
+  const { jsPDF } = window.jspdf || {};
+  if (!jsPDF) {
+    // Charger jsPDF dynamiquement si pas encore chargé
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    script.onload = () => exportPDF(type, data);
+    document.head.appendChild(script);
+    kapToast('Chargement du moteur PDF...');
+    return;
+  }
+
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const W = 210; const M = 18; const TW = W - 2*M;
+
+  // ── En-tête KAP ──
+  doc.setFillColor(13, 24, 41);
+  doc.rect(0, 0, W, 36, 'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(16);
+  doc.text('KAP GROWTH & INVESTMENT', M, 14);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(184,150,110);
+  doc.text('Advisory · Academy · Investment', M, 20);
+  doc.setTextColor(180,196,212);
+  doc.text('Abidjan, Côte d'Ivoire · UEMOA', M, 26);
+
+  // ── Ligne signature ──
+  doc.setDrawColor(184,150,110);
+  doc.setLineWidth(0.5);
+  doc.line(M, 32, M+32, 32);
+
+  doc.setTextColor(180,196,212);
+  doc.setFontSize(8);
+  doc.text('CONFIDENTIEL · ' + new Date().toLocaleDateString('fr-FR', {day:'2-digit',month:'long',year:'numeric'}), W-M, 26, {align:'right'});
+
+  let y = 46;
+
+  if (type === 'facture' && data) {
+    // ── FACTURE ──
+    doc.setTextColor(13,24,41);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(18);
+    doc.text('FACTURE ' + data.numero, M, y); y += 8;
+
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(10);
+    doc.setTextColor(122,139,163);
+    doc.text('Date d'émission : ' + kapFmtDate(data.date), M, y); y += 14;
+
+    // Bloc client
+    doc.setFillColor(244,246,250);
+    doc.rect(M, y-4, TW, 24, 'F');
+    doc.setTextColor(13,24,41);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9);
+    doc.text('CLIENT', M+4, y+2);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(11);
+    doc.text(data.client, M+4, y+9);
+    doc.setFontSize(9);
+    doc.setTextColor(122,139,163);
+    doc.text('Mission : ' + data.mission, M+4, y+16); y += 30;
+
+    // Ligne montant
+    doc.setFillColor(13,24,41);
+    doc.rect(M, y, TW, 16, 'F');
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(10);
+    doc.text('Honoraires', M+4, y+7);
+    doc.setFontSize(13);
+    doc.text(kapFmtFCFA(data.montant) + ' FCFA', W-M-4, y+7, {align:'right'});
+    doc.setFontSize(9);
+    doc.setFont('helvetica','normal');
+    doc.text(data.facturation || '', M+4, y+13); y += 26;
+
+    doc.setTextColor(122,139,163);
+    doc.setFontSize(8);
+    doc.text('Mode de règlement : Virement bancaire · RIB disponible sur demande', M, y);
+
+  } else if (type === 'diagnostic') {
+    // ── RAPPORT DIAGNOSTIC ──
+    doc.setTextColor(13,24,41);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(18);
+    doc.text('DIAGNOSTIC FINANCIER', M, y); y += 6;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(10);
+    doc.setTextColor(122,139,163);
+    doc.text(data?.entreprise || 'Rapport de diagnostic', M, y); y += 14;
+
+    const sections = [
+      {title:'1. Performance & P&L', text:'Analyse du compte de résultat, évolution CA/EBITDA, signaux de marge.'},
+      {title:'2. Structure du bilan', text:'Actifs nets, BFR, trésorerie, dettes financières et capitaux propres.'},
+      {title:'3. Postes clés', text:'Détail des charges opérationnelles, poids dans le CA, immobilisations.'},
+      {title:'4. Ratios & scoring', text:'Ratios de liquidité, solvabilité, rentabilité · Score KAP /100.'},
+      {title:'5. Recommandations', text:'Points forts, risques identifiés, leviers de valeur prioritaires.'}
+    ];
+
+    sections.forEach(s => {
+      if (y > 240) { doc.addPage(); y = 20; }
+      doc.setFillColor(58,110,168);
+      doc.rect(M, y, 3, 8, 'F');
+      doc.setTextColor(13,24,41);
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(11);
+      doc.text(s.title, M+7, y+6); y += 12;
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(9);
+      doc.setTextColor(74,86,103);
+      const lines = doc.splitTextToSize(s.text, TW-7);
+      doc.text(lines, M+7, y);
+      y += lines.length * 5 + 8;
+    });
+
+  } else if (type === 'note') {
+    // ── NOTE DE CONSEIL ──
+    doc.setTextColor(13,24,41);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(18);
+    doc.text('NOTE DE CONSEIL', M, y); y += 6;
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(10);
+    doc.setTextColor(58,110,168);
+    doc.text(data?.sujet || 'Conseil stratégique en finance d'entreprise', M, y); y += 14;
+
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9);
+    doc.setTextColor(122,139,163);
+    doc.text('Destinataire : ' + (data?.destinataire || '—'), M, y); y += 5;
+    doc.text('Rédigée par : Augustin Kpantché · KAP Growth & Investment', M, y); y += 14;
+
+    const body = data?.contenu || 'La présente note synthétise les observations et recommandations issues du diagnostic financier réalisé.';
+    doc.setTextColor(13,24,41);
+    doc.setFontSize(10);
+    const lines = doc.splitTextToSize(body, TW);
+    doc.text(lines, M, y);
+  }
+
+  // ── Pied de page ──
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setDrawColor(216,224,236);
+    doc.setLineWidth(0.3);
+    doc.line(M, 284, W-M, 284);
+    doc.setFontSize(7);
+    doc.setTextColor(184,150,110);
+    doc.text('KAP Growth & Investment · Abidjan · CONFIDENTIEL', M, 290);
+    doc.setTextColor(122,139,163);
+    doc.text('Page ' + i + '/' + pageCount, W-M, 290, {align:'right'});
+  }
+
+  const filename = type === 'facture' ? data.numero : ('KAP_' + type + '_' + new Date().toISOString().slice(0,10));
+  doc.save(filename + '.pdf');
+  kapToast('PDF généré : ' + filename + '.pdf');
+}
+
+// Connecter les boutons export existants dans le diagnostic
+function exportDiagnosticPDF() {
+  exportPDF('diagnostic', { entreprise: 'Diagnostic financier · KAP' });
+}
+
+function exportFacturePDF(facture) {
+  exportPDF('facture', facture);
+}
+
+// ══════════════════════════════════════════
+// INITIALISATION ÉTENDUE
+// ══════════════════════════════════════════
+function kapInitAllData() {
+  renderMissions();
+  renderContacts();
+  renderFactures();
+  renderFormations();
+  renderCibles();
+  renderPipeline();
+  renderCollaborateurs();
+  updateMissionsBadge();
+  refreshDashboard();
+}
+
+document.addEventListener('DOMContentLoaded', kapInitAllData);
+if (document.readyState !== 'loading') kapInitAllData();
+</script>
+
+
+<!-- ══════════ DASHBOARD TEMPS RÉEL ══════════ -->
+<script>
+// ══════════════════════════════════════════
+// DASHBOARD — Calculs dynamiques
+// Sources : missions, factures, prospects, collaborateurs
+// ══════════════════════════════════════════
+
+const CA_BASE_FCFA    = 8400000;   // 8,4 M FCFA facturés existants (statiques)
+const MISSIONS_BASE   = 5;         // 5 missions statiques existantes
+const CIBLE_AN1       = 22000000;  // 22 M FCFA cible
+
+function refreshDashboard() {
+  const missions     = kapLoad(KAP_STORE_KEYS.missions     || 'kap_v1_missions');
+  const factures     = kapLoad(KAP_STORE_KEYS.factures     || 'kap_v1_factures');
+  const prospects    = kapLoad(KAP_STORE_KEYS.prospects    || 'kap_v1_prospects');
+  const collabors    = kapLoad(KAP_STORE_KEYS.collaborateurs || 'kap_v1_collaborateurs');
+
+  // ── CA facturé : base 8,4M + nouvelles factures encaissées ──
+  const caAjout = factures
+    .filter(f => f.statut === 'Encaissée')
+    .reduce((sum, f) => {
+      const m = parseFloat(String(f.montant).replace(/[^0-9.]/g,'')) || 0;
+      return sum + m;
+    }, 0);
+  const caTotal = CA_BASE_FCFA + caAjout;
+  const caPct   = Math.min(Math.round(caTotal / CIBLE_AN1 * 100), 100);
+  const caFmt   = caTotal >= 1000000
+    ? (caTotal/1000000).toLocaleString('fr-FR', {maximumFractionDigits:1}) + ' M'
+    : (caTotal/1000).toLocaleString('fr-FR', {maximumFractionDigits:0}) + ' K';
+
+  setEl('db-ca-facture', caFmt);
+  setEl('db-ca-sub', `▲ ${caPct}% de la cible An1`, caPct >= 80 ? 'up' : caPct >= 50 ? 'warn' : '');
+  setEl('db-val-facture', caFmt);
+  setBarWidth('db-bar-facture', caPct);
+
+  // ── Missions : base 5 + nouvelles ──
+  const totalMissions = MISSIONS_BASE + missions.length;
+  setEl('db-missions-count', totalMissions.toString());
+  setEl('db-missions-sub', `● ${missions.length} nouvelle${missions.length > 1 ? 's' : ''} this session`, 'up');
+  setEl('db-missions-cs', `${totalMissions} missions · An1 2026`);
+
+  // Injecter les nouvelles missions dans le tableau dashboard
+  const tbody = document.getElementById('db-missions-tbody');
+  if (tbody) {
+    tbody.querySelectorAll('tr[data-kap-db]').forEach(tr => tr.remove());
+    missions.slice(0, 3).forEach(m => {
+      const badgeClass = MISSION_TYPE_BADGE?.[m.type] || 'b-gray';
+      const tr = document.createElement('tr');
+      tr.setAttribute('data-kap-db', m.id);
+      tr.className = 'row-new';
+      tr.innerHTML = `
+        <td><div class="dn">${kapEscapeHtml(m.nom)}</div><div class="dm">${kapEscapeHtml(m.secteur)} · ${kapEscapeHtml(m.client)}</div></td>
+        <td><span class="badge ${badgeClass}">${kapEscapeHtml(m.type)}</span></td>
+        <td class="num" style="color:var(--accent);font-weight:600">${m.honoraires ? kapFmtFCFA(m.honoraires) + ' M' : '—'}</td>
+        <td><span class="badge b-orange">${kapEscapeHtml(m.statut || 'En cours')}</span></td>`;
+      tbody.insertBefore(tr, tbody.firstChild);
+    });
+  }
+
+  // ── Pipeline commercial ──
+  const totalPipe = prospects.length;
+  setEl('db-pipe-count', totalPipe.toString());
+  setEl('db-pipe-sub', totalPipe > 0 ? `${totalPipe} prospect${totalPipe>1?'s':''} actif${totalPipe>1?'s':''}` : 'Aucun prospect');
+  setEl('db-pipe-cs', `${totalPipe} prospect${totalPipe>1?'s':''} · Pipeline commercial`);
+  setEl('db-pipe-total2', totalPipe.toString());
+
+  for (let s = 0; s < 5; s++) {
+    const count = prospects.filter(p => p.stade === s).length;
+    setEl('db-pipe-s' + s, count.toString());
+  }
+
+  // Pipeline potentiel (somme des montants prospects)
+  const pipePotentiel = prospects.reduce((sum, p) => {
+    const m = parseFloat(String(p.montant).replace(/[^0-9.]/g,'')) || 0;
+    return sum + m;
+  }, 0);
+  if (pipePotentiel > 0) {
+    setEl('db-val-pipe', pipePotentiel.toLocaleString('fr-FR', {maximumFractionDigits:0}) + ' M pot.');
+    setBarWidth('db-bar-pipe', Math.min(Math.round(pipePotentiel / 220 * 100), 100));
+  }
+
+  // ── Équipe ──
+  const totalTeam = 1 + collabors.length;
+  setEl('db-team-count', totalTeam.toString());
+  setEl('db-team-sub', `${collabors.filter(c=>c.role==='collab').length} collaborateur${collabors.filter(c=>c.role==='collab').length>1?'s':''} · ${collabors.filter(c=>c.role==='client').length} client${collabors.filter(c=>c.role==='client').length>1?'s':''}`);
+
+  // ── Conditions de sortie salariale ──
+  const missionsCond = totalMissions >= 3;
+  const el = document.getElementById('db-cond-missions-badge');
+  const lbl = document.getElementById('db-cond-missions-lbl');
+  if (el) {
+    el.className = 'badge ' + (missionsCond ? 'b-green' : 'b-orange');
+    el.textContent = missionsCond ? `✓ ${totalMissions} missions` : `${totalMissions}/3 missions`;
+  }
+
+  // ── Activité récente : injecter les 3 derniers événements saisies ──
+  const feed = document.getElementById('db-activite-feed');
+  if (feed) {
+    const recent = [];
+
+    // Dernières missions
+    missions.slice(0, 2).forEach(m => {
+      recent.push({
+        dot: 'd-ok',
+        txt: `Nouvelle mission : ${m.nom}`,
+        time: kapTimeAgo(m.createdAt)
+      });
+    });
+
+    // Dernières factures
+    factures.slice(0, 2).forEach(f => {
+      recent.push({
+        dot: f.statut === 'Encaissée' ? 'd-ok' : 'd-warn',
+        txt: `Facture ${f.numero} · ${f.client} · ${kapFmtFCFA(f.montant)} FCFA`,
+        time: kapTimeAgo(f.createdAt)
+      });
+    });
+
+    // Derniers prospects
+    prospects.slice(0, 1).forEach(p => {
+      recent.push({
+        dot: 'd-info',
+        txt: `Nouveau prospect : ${p.nom} · ${PIPE_STAGES?.[p.stade] || 'Prospection'}`,
+        time: kapTimeAgo(p.createdAt)
+      });
+    });
+
+    if (recent.length > 0) {
+      // Supprimer les entrées dynamiques précédentes
+      feed.querySelectorAll('.act-item[data-kap-live]').forEach(el => el.remove());
+
+      recent.slice(0, 4).forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'act-item row-new';
+        div.setAttribute('data-kap-live', '1');
+        div.innerHTML = `<div class="act-dot ${r.dot}"></div><div><div class="act-txt">${kapEscapeHtml(r.txt)}</div><div class="act-time">${r.time}</div></div>`;
+        feed.insertBefore(div, feed.firstChild);
+      });
+    }
+  }
+
+  // Date/heure actualisation
+  const now = new Date();
+  const sub = document.getElementById('db-date-sub');
+  if (sub) sub.textContent = `KAP Growth & Investment · Actualisé le ${now.toLocaleDateString('fr-FR')} à ${now.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'})}`;
+}
+
+// ── Helpers ──
+function setEl(id, text, cls) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = text;
+  if (cls !== undefined) {
+    el.className = 'kpi-s ' + cls;
+  }
+}
+
+function setBarWidth(id, pct) {
+  const el = document.getElementById(id);
+  if (el) el.style.width = Math.min(pct, 100) + '%';
+}
+
+function kapTimeAgo(isoStr) {
+  if (!isoStr) return 'Récemment';
+  const diff = (Date.now() - new Date(isoStr)) / 1000;
+  if (diff < 60)   return 'À l'instant';
+  if (diff < 3600) return `Il y a ${Math.floor(diff/60)} min`;
+  if (diff < 86400) return `Il y a ${Math.floor(diff/3600)} h`;
+  return `Il y a ${Math.floor(diff/86400)} j`;
+}
+
+// ── Auto-refresh toutes les 60 secondes ──
+setInterval(refreshDashboard, 60000);
+
+// ── Appeler refreshDashboard à chaque navigation vers le dashboard ──
+const _navOrig2 = window.nav;
+if (typeof _navOrig2 === 'function') {
+  window.nav = function(id, el) {
+    _navOrig2(id, el);
+    if (id === 'dashboard') setTimeout(refreshDashboard, 50);
+  };
+}
 </script>
 
 </body>
