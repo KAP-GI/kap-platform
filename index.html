@@ -2887,19 +2887,19 @@ label.fl {
   <!-- ══ PAGE : IA — SCÉNARIOS ══ -->
   <div class="pg" id="pg-ia-scenarios">
     <div class="ph"><div><div class="ph-title">Analyse de scénarios</div><div class="ph-sub">IA Financière · Optimiste · Conservateur · Pessimiste</div></div></div>
-    <div class="empty"><i class="ti ti-adjustments"></i><div class="empty-t">Analyse multi-scénarios</div><div class="empty-s">Sélectionnez une mission ou importez un modèle pour lancer l'analyse de sensibilité</div><button class="btn btn-primary" style="margin-top:8px">Sélectionner un modèle</button></div>
+    <div class="empty"><i class="ti ti-adjustments"></i><div class="empty-t">Analyse multi-scénarios</div><div class="empty-s">Sélectionnez une mission ou importez un modèle pour lancer l'analyse de sensibilité</div><button class="btn btn-primary" style="margin-top:8px" onclick="nav('model-bp',null)">Sélectionner un modèle →</button></div>
   </div>
 
   <!-- ══ PAGE : IA — DCF ══ -->
   <div class="pg" id="pg-ia-dcf">
     <div class="ph"><div><div class="ph-title">Valorisation DCF</div><div class="ph-sub">Advisory · Discounted Cash Flow · WACC · Multiples</div></div></div>
-    <div class="empty"><i class="ti ti-calculator"></i><div class="empty-t">Valorisation DCF</div><div class="empty-s">Importez les projections financières d'une cible pour lancer la valorisation</div><button class="btn btn-primary" style="margin-top:8px">Importer projections</button></div>
+    <div class="empty"><i class="ti ti-calculator"></i><div class="empty-t">Valorisation DCF</div><div class="empty-s">Importez les projections financières d'une cible pour lancer la valorisation</div><button class="btn btn-primary" style="margin-top:8px" onclick="nav('model-bp',null)">Importer projections →</button></div>
   </div>
 
   <!-- ══ PAGE : IA — BENCHMARK ══ -->
   <div class="pg" id="pg-ia-bench">
     <div class="ph"><div><div class="ph-title">Benchmark sectoriel</div><div class="ph-sub">Advisory · Comparaison UEMOA · Ratios sectoriels</div></div></div>
-    <div class="empty"><i class="ti ti-chart-bar"></i><div class="empty-t">Benchmark sectoriel UEMOA</div><div class="empty-s">Comparez les ratios d'une entreprise aux standards de son secteur dans l'espace UEMOA · Advisory</div><button class="btn btn-primary" style="margin-top:8px">Choisir un secteur</button></div>
+    <div class="empty"><i class="ti ti-chart-bar"></i><div class="empty-t">Benchmark sectoriel UEMOA</div><div class="empty-s">Comparez les ratios d'une entreprise aux standards de son secteur dans l'espace UEMOA · Advisory</div><button class="btn btn-primary" style="margin-top:8px" onclick="nav('inv-scoring',null)">Choisir un secteur →</button></div>
   </div>
 
   <!-- ══ PAGES PLACEHOLDER GÉNÉRIQUES ══ -->
@@ -3767,9 +3767,126 @@ label.fl {
     </div>
   </div>
 
-  <div class="pg" id="pg-note-memo"><div class="empty"><i class="ti ti-file-invoice"></i><div class="empty-t">Mémorandum investisseur</div><div class="empty-s">Structure narrative · Thèse d'investissement · Projections · À construire</div></div></div>
-  <div class="pg" id="pg-note-pitch"><div class="empty"><i class="ti ti-presentation"></i><div class="empty-t">Pitchdeck</div><div class="empty-s">Présentation PowerPoint investisseur · Export auto · À construire</div></div></div>
-  <div class="pg" id="pg-note-rapport"><div class="empty"><i class="ti ti-report"></i><div class="empty-t">Rapport de mission</div><div class="empty-s">Synthèse livrée au client · Lié à la mission Advisory · À construire</div></div></div>
+  <div class="pg" id="pg-note-memo">
+    <div class="ph"><div><div class="ph-title">Mémorandum <span>investisseur</span></div><div class="ph-sub">Note d'information · Levée de fonds & structuration · Thèse · Projections · Termes indicatifs</div></div>
+      <div style="display:flex;gap:8px"><button class="btn btn-ghost" onclick="exportPDF('diagnostic',{entreprise:'Mémorandum Investisseur'})"><i class="ti ti-download"></i> Exporter PDF</button><button class="btn btn-navy"><i class="ti ti-presentation"></i> Exporter PPTX</button></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div><div class="ct">Paramétrer le mémorandum</div><div class="cs">Générer un investment memo complet</div></div></div>
+        <div class="cb">
+          <div class="fg" style="margin-bottom:14px">
+            <div><label class="fl">Entreprise / Projet</label><input class="fi" placeholder="Ex : AGRI-SUD CI"/></div>
+            <div><label class="fl">Secteur</label><select class="fi fs"><option>Agro-industrie</option><option>Énergie</option><option>Industrie</option><option>Fintech</option><option>Santé</option></select></div>
+            <div><label class="fl">Type d'opération</label><select class="fi fs"><option>Levée de fonds capital</option><option>Dette bancaire</option><option>Obligations convertibles</option><option>Financement mixte</option><option>M&A sell-side</option></select></div>
+            <div><label class="fl">Montant recherché (M FCFA)</label><input class="fi" placeholder="Ex : 50"/></div>
+            <div><label class="fl">Investisseurs cibles</label><select class="fi fs"><option>Fonds régionaux UEMOA</option><option>IFC / Proparco / BAD</option><option>Banques commerciales CI</option><option>Investisseurs privés</option></select></div>
+            <div><label class="fl">Horizon de sortie</label><select class="fi fs"><option>3–5 ans</option><option>5–7 ans</option><option>7–10 ans</option></select></div>
+            <div class="fgf"><label class="fl">Thèse d'investissement</label><textarea class="fi" rows="3" placeholder="Positionnement, proposition de valeur, arguments clés pour les investisseurs..."></textarea></div>
+          </div>
+          <div style="border:1px solid var(--surface-3);border-radius:var(--r);padding:12px;margin-bottom:14px">
+            <div style="font-size:10px;font-weight:700;color:var(--slate);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Structure du mémorandum KAP (6 chapitres)</div>
+            <div class="g2e" style="gap:6px">
+              <div class="sr" style="padding:5px 0;border:none"><span class="sr-l" style="font-size:11px">1. Résumé exécutif</span><span class="badge b-green">Auto</span></div>
+              <div class="sr" style="padding:5px 0;border:none"><span class="sr-l" style="font-size:11px">2. Profil entreprise</span><span class="badge b-blue">Saisie</span></div>
+              <div class="sr" style="padding:5px 0;border:none"><span class="sr-l" style="font-size:11px">3. Analyse marché</span><span class="badge b-blue">Saisie</span></div>
+              <div class="sr" style="padding:5px 0;border:none"><span class="sr-l" style="font-size:11px">4. Modèle financier</span><span class="badge b-green">Import BP</span></div>
+              <div class="sr" style="padding:5px 0;border:none"><span class="sr-l" style="font-size:11px">5. Thèse & termes</span><span class="badge b-blue">Saisie</span></div>
+              <div class="sr" style="padding:5px 0;border:none"><span class="sr-l" style="font-size:11px">6. Risques & mitigation</span><span class="badge b-green">Auto IA</span></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px"><button class="btn btn-primary" style="flex:1;justify-content:center"><i class="ti ti-sparkles"></i> Générer le mémorandum</button><button class="btn btn-ghost"><i class="ti ti-template"></i> Template KAP</button></div>
+        </div>
+      </div>
+      <div class="gcol">
+        <div class="card"><div class="ch"><div class="ct">Mémorandums actifs</div></div>
+          <div style="padding:12px 16px;border-bottom:1px solid var(--surface-2)"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><div class="dn">AGRI-SUD CI</div><span class="badge b-orange">En cours</span></div><div class="dm">Levée capital · 50 M FCFA · Fonds UEMOA</div><div style="margin-top:6px"><div class="pr"><span class="pr-l" style="font-size:11px;width:100px">Avancement</span><div class="pr-t"><div class="pr-f" style="width:65%;background:var(--accent)"></div></div><span class="pr-v">65%</span></div></div></div>
+          <div style="padding:12px 16px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><div class="dn">TECHNOVA GROUP</div><span class="badge b-blue">Finalisé</span></div><div class="dm">M&A sell-side · 4,5 M honoraires · Dakar</div><div style="margin-top:6px"><div class="pr"><span class="pr-l" style="font-size:11px;width:100px">Avancement</span><div class="pr-t"><div class="pr-f" style="width:95%;background:var(--ok)"></div></div><span class="pr-v up-c">95%</span></div></div></div>
+        </div>
+        <div class="card"><div class="ch"><div class="ct">Standards KAP · Levée de fonds</div></div>
+          <div class="sr"><span class="sr-l">Success fee standard</span><span class="sr-v" style="color:var(--accent)">3% du montant levé</span></div>
+          <div class="sr"><span class="sr-l">Ticket minimum</span><span class="sr-v">500 M FCFA</span></div>
+          <div class="sr"><span class="sr-l">Délai structuration</span><span class="sr-v">4–8 semaines</span></div>
+          <div class="sr"><span class="sr-l">Délai closing moyen</span><span class="sr-v">3–6 mois</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="pg" id="pg-note-pitch">
+    <div class="ph"><div><div class="ph-title">Pitchdeck <span>investisseur</span></div><div class="ph-sub">Note d'information · Roadshow · 15–20 slides · Format VC / Fonds institutionnels</div></div>
+      <div style="display:flex;gap:8px"><button class="btn btn-ghost"><i class="ti ti-eye"></i> Prévisualiser</button><button class="btn btn-navy"><i class="ti ti-download"></i> Exporter PPTX</button></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div><div class="ct">Configurer le pitchdeck</div></div></div>
+        <div class="cb">
+          <div class="fg" style="margin-bottom:14px">
+            <div><label class="fl">Entreprise</label><input class="fi" placeholder="Ex : AGRI-SUD CI"/></div>
+            <div><label class="fl">Audience</label><select class="fi fs"><option>Fonds UEMOA</option><option>Investisseurs institutionnels</option><option>IFC / Proparco</option><option>Business Angels</option></select></div>
+            <div><label class="fl">Montant (M FCFA)</label><input class="fi" placeholder="Ex : 50"/></div>
+            <div><label class="fl">Type opération</label><select class="fi fs"><option>Levée de fonds capital</option><option>M&A · Cession partielle</option><option>Financement projet</option></select></div>
+            <div><label class="fl">Langue</label><select class="fi fs"><option>Français</option><option>Anglais</option><option>Bilingue FR/EN</option></select></div>
+            <div><label class="fl">Nombre de slides</label><select class="fi fs"><option>15 slides (concis)</option><option>20 slides (standard)</option><option>25 slides (détaillé)</option></select></div>
+          </div>
+          <div style="border:1px solid var(--surface-3);border-radius:var(--r);padding:12px;margin-bottom:14px">
+            <div style="font-size:10px;font-weight:700;color:var(--slate);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Plan type pitchdeck KAP (20 slides)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px">
+              ${[['01','Couverture & accroche'],['02','Le problème'],['03','La solution'],['04','Marché adressable'],['05','Modèle économique'],['06','Traction & références'],['07','Avantage concurrentiel'],['08','Équipe dirigeante'],['09','Projections financières'],['10','Termes de l'opération']].map(s=>`<div style="font-size:11px;color:var(--navy-2);padding:3px 0;display:flex;align-items:center;gap:5px"><span style="color:var(--accent);font-weight:700;width:16px">${s[0]}</span>${s[1]}</div>`).join('')}
+            </div>
+          </div>
+          <div style="display:flex;gap:8px"><button class="btn btn-primary" style="flex:1;justify-content:center"><i class="ti ti-sparkles"></i> Générer le pitchdeck</button><button class="btn btn-ghost"><i class="ti ti-template"></i> Template KAP</button></div>
+        </div>
+      </div>
+      <div class="gcol">
+        <div class="card"><div class="ch"><div class="ct">Pitchdeck actifs</div></div>
+          <div style="padding:12px 16px;border-bottom:1px solid var(--surface-2)"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><div class="dn">AGRI-SUD CI</div><span class="badge b-orange">En cours</span></div><div class="dm">Capital · Fonds UEMOA · 20 slides · FR</div><div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-ghost" style="padding:4px 10px;font-size:11px"><i class="ti ti-eye"></i> Voir</button><button class="btn btn-ghost" style="padding:4px 10px;font-size:11px"><i class="ti ti-edit"></i> Modifier</button></div></div>
+          <div style="padding:12px 16px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><div class="dn">TECHNOVA GROUP</div><span class="badge b-blue">Finalisé</span></div><div class="dm">M&A · Investisseurs privés · 15 slides · EN</div><div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-ghost" style="padding:4px 10px;font-size:11px"><i class="ti ti-eye"></i> Voir</button><button class="btn btn-navy" style="padding:4px 10px;font-size:11px"><i class="ti ti-download"></i> PDF</button></div></div>
+        </div>
+        <div class="card"><div class="ch"><div class="ct">Standards de présentation</div></div>
+          <div class="sr"><span class="sr-l">Slides optimal</span><span class="sr-v">15–20</span></div>
+          <div class="sr"><span class="sr-l">Durée pitch</span><span class="sr-v">20–30 min</span></div>
+          <div class="sr"><span class="sr-l">Format export</span><span class="sr-v">PDF + PPTX</span></div>
+          <div class="sr"><span class="sr-l">Charte KAP</span><span class="badge b-green">Appliquée auto</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="pg" id="pg-note-rapport">
+    <div class="ph"><div><div class="ph-title">Rapport de <span>mission</span></div><div class="ph-sub">Note d'information · Synthèse livrée au client · Lié à la mission Advisory</div></div>
+      <div style="display:flex;gap:8px"><button class="btn btn-ghost" onclick="exportPDF('note',{sujet:'Rapport de mission',destinataire:'Client'})"><i class="ti ti-download"></i> Exporter PDF</button></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div><div class="ct">Générer un rapport de mission</div><div class="cs">Synthèse finale livrée au client</div></div></div>
+        <div class="cb">
+          <div class="fg" style="margin-bottom:14px">
+            <div><label class="fl">Mission liée</label><select class="fi fs"><option>Levée AGRI-SUD CI</option><option>BP SOLARIS CI</option><option>Restructuration METALIS</option><option>Retainer PHARMAPLUS</option><option>M&A TECHNOVA</option></select></div>
+            <div><label class="fl">Type de rapport</label><select class="fi fs"><option>Rapport final de mission</option><option>Rapport d'étape</option><option>Note de synthèse</option><option>Rapport de diagnostic</option></select></div>
+            <div><label class="fl">Destinataire</label><input class="fi" placeholder="Ex : M. Konan Yao · DG AGRI-SUD"/></div>
+            <div><label class="fl">Date de remise</label><input class="fi" type="date" value="2026-06-16"/></div>
+            <div class="fgf"><label class="fl">Résumé exécutif</label><textarea class="fi" rows="3" placeholder="Points clés de la mission, résultats obtenus, recommandations..."></textarea></div>
+            <div class="fgf"><label class="fl">Sections à inclure</label>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+                <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" checked/> Contexte & objectifs</label>
+                <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" checked/> Méthodologie</label>
+                <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" checked/> Résultats & livrables</label>
+                <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" checked/> Recommandations</label>
+                <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox"/> Annexes financières</label>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="exportPDF('note',{sujet:'Rapport de mission',destinataire:'Client'})"><i class="ti ti-sparkles"></i> Générer le rapport PDF</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Rapports récents</div></div>
+        <div class="act-item"><div class="act-dot d-ok"></div><div><div class="act-txt">BP SOLARIS CI · Rapport final · 24 pages</div><div class="act-time">9 juin 2026</div></div></div>
+        <div class="act-item"><div class="act-dot d-ok"></div><div><div class="act-txt">PHARMAPLUS · Reporting mai 2026 · 8 pages</div><div class="act-time">1 juin 2026</div></div></div>
+        <div class="act-item"><div class="act-dot d-info"></div><div><div class="act-txt">METALIS · Diagnostic financier v1 · 18 pages</div><div class="act-time">25 mai 2026</div></div></div>
+        <div style="padding:10px 16px;font-size:12px;color:var(--slate)">Les rapports générés sont archivés dans <span class="ca" onclick="nav('livr-rapports',null)">Livrables & PDF →</span></div>
+      </div>
+    </div>
+  </div>
   <div class="pg" id="pg-modeles-biblio">
     <div class="ph"><div><div class="ph-title">Bibliothèque de <span style="color:var(--accent)">modèles</span></div><div class="ph-sub">Modèles financiers Excel · Bibliothèque KAP · Classés par type de mission</div></div>
       <button class="btn btn-primary" onclick="nav('model-bp',null)"><i class="ti ti-plus"></i> Nouveau modèle</button>
@@ -4011,7 +4128,7 @@ label.fl {
             <div style="display:flex;gap:6px">
               <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px"><i class="ti ti-users"></i> Liste inscrits</button>
               <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px"><i class="ti ti-mail"></i> Envoyer convoc.</button>
-              <button class="btn btn-primary" style="font-size:11px;padding:5px 10px"><i class="ti ti-check"></i> Marquer présences</button>
+              <button class="btn btn-primary" style="font-size:11px;padding:5px 10px" onclick="kapToast('Présences enregistrées · Attestations disponibles')"><i class="ti ti-check"></i> Marquer présences</button>
             </div>
           </div>
 
@@ -4124,7 +4241,7 @@ label.fl {
               <div><label class="fl">Score obtenu (/20)</label><input class="fi" type="number" min="0" max="20" placeholder="Ex : 17"/></div>
               <div><label class="fl">Mention</label><select class="fi fs"><option>Très bien (17–20)</option><option>Bien (14–16)</option><option>Satisfaisant (12–13)</option><option>Participation</option></select></div>
             </div>
-            <button class="btn btn-primary" style="width:100%;justify-content:center"><i class="ti ti-certificate"></i> Générer l'attestation PDF</button>
+            <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="exportPDF('note',{sujet:'Attestation de formation',destinataire:'Participant'})"><i class="ti ti-certificate"></i> Générer l'attestation PDF</button>
           </div>
         </div>
 
@@ -4213,7 +4330,7 @@ label.fl {
                 <select class="fi fs"><option>LinkedIn</option><option>Site KAP</option><option>Presse financière</option><option>Multiple</option></select>
               </div>
             </div>
-            <button class="btn btn-primary" style="width:100%;justify-content:center"><i class="ti ti-sparkles"></i> Rédiger avec IA</button>
+            <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="kapToast('Rédaction IA · Disponible après activation du proxy Vercel')"><i class="ti ti-sparkles"></i> Rédiger avec IA</button>
           </div>
         </div>
 
@@ -4358,7 +4475,7 @@ label.fl {
               <div><label class="fl">Score management /25</label><input class="fi" type="number" min="0" max="25" placeholder="0–25"/></div>
               <div><label class="fl">Score juridique /25</label><input class="fi" type="number" min="0" max="25" placeholder="0–25"/></div>
             </div>
-            <button class="btn btn-primary" style="width:100%;justify-content:center"><i class="ti ti-calculator"></i> Calculer le score KAP</button>
+            <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="calculerScoreKAP()"><i class="ti ti-calculator"></i> Calculer le score KAP</button>
           </div>
         </div>
       </div>
@@ -5275,96 +5392,286 @@ function applyRoleRestrictions() {
 
 // ── Portail client ──
 function showClientPortal() {
-  // Le client voit uniquement sa mission
   const user = currentUser;
-  document.getElementById('tb-title').innerHTML = `Portail client · <span>${user.missions_access[0]}</span>`;
+  const missionName = user.missions_access[0];
 
-  // Créer une page portail simplifiée
+  document.getElementById('tb-title').innerHTML = `Portail client · <span>${missionName}</span>`;
+
+  // Masquer toute la sidebar sauf le logo
+  document.querySelectorAll('.ni, .si').forEach(el => {
+    el.style.display = 'none';
+  });
+
+  // Construire le portail enrichi
   const pg = document.getElementById('pg-dashboard');
-  if (pg) {
-    pg.innerHTML = `
-      <div style="max-width:680px;margin:0 auto">
-        <div class="mh">
-          <div class="mh-av">AK</div>
-          <div>
-            <div class="mh-name">Bienvenue, ${user.name}</div>
-            <div class="mh-meta">Portail client · KAP Growth & Investment · AGRI-SUD CI</div>
-            <div class="mh-pills">
-              <span class="mp mp-gold">Mission active</span>
-              <span class="mp mp-slate">Levée de fonds · 50 M FCFA</span>
+  if (!pg) return;
+
+  pg.innerHTML = `
+    <div style="max-width:760px;margin:0 auto">
+
+      <!-- En-tête mission -->
+      <div class="mh" style="margin-bottom:16px">
+        <div class="mh-av" style="font-size:13px">AK</div>
+        <div style="flex:1">
+          <div class="mh-name">Bienvenue, ${user.name}</div>
+          <div class="mh-meta">Portail client · KAP Growth & Investment · ${missionName}</div>
+          <div class="mh-pills">
+            <span class="mp mp-gold">Mission active</span>
+            <span class="mp mp-slate">Levée de fonds · 50 M FCFA</span>
+            <span class="mp mp-slate">Conseil : Augustin Kpantché</span>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:10px;color:var(--slate-2);margin-bottom:4px">Avancement global</div>
+          <div style="font-family:var(--font-display);font-size:24px;color:var(--accent-2)">65%</div>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-g kpi-g3" style="margin-bottom:16px">
+        <div class="kpi info">
+          <div class="kpi-l">Statut</div>
+          <div class="kpi-v">En cours</div>
+          <div class="kpi-s up">● Structuration active</div>
+        </div>
+        <div class="kpi ok">
+          <div class="kpi-l">Prochaine étape</div>
+          <div class="kpi-v" style="font-size:14px">Due diligence</div>
+          <div class="kpi-s neu">Investisseurs identifiés</div>
+        </div>
+        <div class="kpi gold">
+          <div class="kpi-l">Livrables disponibles</div>
+          <div class="kpi-v">2</div>
+          <div class="kpi-s up">● Téléchargeables</div>
+        </div>
+      </div>
+
+      <!-- Tabs portail -->
+      <div class="tabs" id="portal-tabs" style="margin-bottom:16px">
+        <div class="tab active" onclick="portalTab('suivi', this)"><i class="ti ti-chart-line" style="margin-right:5px"></i>Suivi dossier</div>
+        <div class="tab" onclick="portalTab('livrables', this)"><i class="ti ti-file-export" style="margin-right:5px"></i>Livrables</div>
+        <div class="tab" onclick="portalTab('messagerie', this)"><i class="ti ti-message" style="margin-right:5px"></i>Messagerie <span id="portal-msg-badge" style="display:none;background:var(--danger);color:white;font-size:9px;font-weight:700;padding:1px 5px;border-radius:20px;margin-left:4px">2</span></div>
+        <div class="tab" onclick="portalTab('infos', this)"><i class="ti ti-info-circle" style="margin-right:5px"></i>Infos mission</div>
+      </div>
+
+      <!-- Contenu tabs -->
+      <div id="portal-content">
+
+        <!-- Tab Suivi -->
+        <div id="portal-suivi">
+          <div class="card" style="margin-bottom:14px">
+            <div class="ch"><div><div class="ct">Progression par étape</div><div class="cs">${missionName} · Levée de fonds 50 M FCFA</div></div></div>
+            <div class="cb" style="padding:16px 18px">
+              ${[
+                {label:'Structuration & analyse', pct:100, color:'var(--ok)', done:true},
+                {label:'Mémorandum investisseur', pct:80, color:'var(--accent)', done:false},
+                {label:'Approche investisseurs', pct:45, color:'var(--warn)', done:false},
+                {label:'Due diligence', pct:15, color:'var(--info)', done:false},
+                {label:'Négociation & closing', pct:0, color:'var(--slate-3)', done:false}
+              ].map(s => `
+                <div style="margin-bottom:14px">
+                  <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                    <span style="font-size:12.5px;font-weight:${s.done?'600':'400'};color:${s.done?'var(--ok)':'var(--navy)'}">
+                      ${s.done?'✓ ':''} ${s.label}
+                    </span>
+                    <span style="font-size:12px;font-weight:600;color:${s.pct===100?'var(--ok)':s.pct===0?'var(--slate)':'var(--accent)'}">
+                      ${s.pct}%
+                    </span>
+                  </div>
+                  <div class="pr-t" style="height:6px">
+                    <div class="pr-f" style="width:${s.pct}%;background:${s.color};transition:width .6s ease"></div>
+                  </div>
+                </div>`).join('')}
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="ch"><div class="ct">Chronologie</div></div>
+            <div class="cb" style="padding:0">
+              ${[
+                {date:'10 mai 2026', label:'Mission démarrée', detail:'Contrat signé · Honoraires 1,5 M FCFA', dot:'d-ok', done:true},
+                {date:'25 mai 2026', label:'Analyse financière terminée', detail:'DataBook AGRI-SUD traitée · Note de conseil livrée', dot:'d-ok', done:true},
+                {date:'5 juin 2026', label:'Mémorandum investisseur v1', detail:'En cours de finalisation · Livraison prévue 15 juin', dot:'d-info', done:false},
+                {date:'20 juin 2026', label:'Approche investisseurs', detail:'3 fonds UEMOA ciblés · Envoi dossiers', dot:'d-warn', done:false},
+                {date:'Août 2026', label:'Due diligence investisseur', detail:'À confirmer après premiers retours', dot:'d-warn', done:false},
+                {date:'Oct. 2026', label:'Closing prévu', detail:'Signature et déblocage des fonds', dot:'d-warn', done:false}
+              ].map((e,i) => `
+                <div class="act-item" style="padding:12px 18px;${!e.done?'opacity:.65':''}">
+                  <div class="act-dot ${e.dot}" style="${!e.done?'background:var(--slate-3)':''}"></div>
+                  <div style="flex:1">
+                    <div style="display:flex;justify-content:space-between">
+                      <div class="act-txt" style="font-weight:${e.done?'500':'400'}">${e.label}</div>
+                      <div class="act-time" style="flex-shrink:0;margin-left:10px">${e.date}</div>
+                    </div>
+                    <div class="act-time">${e.detail}</div>
+                  </div>
+                </div>`).join('')}
             </div>
           </div>
         </div>
 
-        <div class="kpi-g kpi-g3">
-          <div class="kpi info"><div class="kpi-l">Statut mission</div><div class="kpi-v">En cours</div><div class="kpi-s up">● Structuration active</div></div>
-          <div class="kpi ok"><div class="kpi-l">Avancement</div><div class="kpi-v">65%</div><div class="kpi-s up">▲ Mémorandum finalisé</div></div>
-          <div class="kpi gold"><div class="kpi-l">Prochaine étape</div><div class="kpi-v">DD</div><div class="kpi-s neu">Due diligence investisseur</div></div>
-        </div>
-
-        <div class="card">
-          <div class="ch"><div class="ct">Suivi de votre dossier — AGRI-SUD CI</div></div>
-          <div class="cb" style="padding:16px 18px">
-            <div class="pr" style="margin-bottom:12px"><span class="pr-l">Structuration dossier</span><div class="pr-t"><div class="pr-f" style="width:100%;background:var(--ok)"></div></div><span class="pr-v up-c">100%</span></div>
-            <div class="pr" style="margin-bottom:12px"><span class="pr-l">Mémorandum investisseur</span><div class="pr-t"><div class="pr-f" style="width:80%;background:var(--accent)"></div></div><span class="pr-v">80%</span></div>
-            <div class="pr" style="margin-bottom:12px"><span class="pr-l">Approche investisseurs</span><div class="pr-t"><div class="pr-f" style="width:45%;background:var(--warn)"></div></div><span class="pr-v">45%</span></div>
-            <div class="pr"><span class="pr-l">Due diligence & closing</span><div class="pr-t"><div class="pr-f" style="width:10%;background:var(--slate-3)"></div></div><span class="pr-v neu-c">10%</span></div>
+        <!-- Tab Livrables -->
+        <div id="portal-livrables" style="display:none">
+          <div class="card">
+            <div class="ch"><div><div class="ct">Vos livrables</div><div class="cs">Documents produits par KAP pour votre dossier</div></div></div>
+            <div class="cb" style="padding:0">
+              ${[
+                {icon:'ti-file-text', name:'Note de conseil stratégique', desc:'Analyse situation financière · Recommandations', date:'25 mai 2026', type:'PDF', available:true},
+                {icon:'ti-table', name:'Modèle financier AGRI-SUD v2', desc:'Business Plan · Projections 6 ans · 3 scénarios', date:'1 juin 2026', type:'Excel', available:true},
+                {icon:'ti-file-invoice', name:'Mémorandum investisseur v1', desc:'Investment memo · En cours de finalisation', date:'15 juin 2026 (prévu)', type:'PDF', available:false},
+                {icon:'ti-presentation', name:'Pitchdeck investisseur', desc:'Présentation 20 slides · Fonds UEMOA', date:'20 juin 2026 (prévu)', type:'PPTX', available:false}
+              ].map(l => `
+                <div class="sr" style="padding:14px 18px;${!l.available?'opacity:.5':''}">
+                  <div style="display:flex;align-items:center;gap:12px">
+                    <i class="ti ${l.icon}" style="font-size:20px;color:${l.available?'var(--accent)':'var(--slate)'}"></i>
+                    <div>
+                      <div class="dn">${l.name}</div>
+                      <div class="dm">${l.desc} · ${l.date}</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span class="badge ${l.available?'b-blue':'b-orange'}">${l.available?l.type:'En préparation'}</span>
+                    ${l.available ? '<button class="btn btn-ghost" style="padding:5px 12px;font-size:11px" onclick="kapToast('Téléchargement · Fonctionnel après connexion Supabase')"><i class="ti ti-download"></i> Télécharger</button>' : ''}
+                  </div>
+                </div>`).join('')}
+            </div>
           </div>
         </div>
 
-        <div class="card">
-          <div class="ch"><div class="ct">Livrables disponibles</div></div>
-          <div class="sr"><span class="sr-l"><i class="ti ti-file-text" style="margin-right:6px;color:var(--accent)"></i>Note de conseil stratégique v1</span><button class="btn btn-ghost" style="padding:4px 10px;font-size:11px"><i class="ti ti-download"></i> PDF</button></div>
-          <div class="sr"><span class="sr-l"><i class="ti ti-table" style="margin-right:6px;color:var(--accent)"></i>Modèle financier AGRI-SUD v2</span><button class="btn btn-ghost" style="padding:4px 10px;font-size:11px"><i class="ti ti-download"></i> Excel</button></div>
-          <div class="sr" style="opacity:.5"><span class="sr-l"><i class="ti ti-file-invoice" style="margin-right:6px;color:var(--slate)"></i>Mémorandum investisseur — en cours</span><span class="badge b-orange">En préparation</span></div>
+        <!-- Tab Messagerie -->
+        <div id="portal-messagerie" style="display:none">
+          <div class="card" style="margin-bottom:14px">
+            <div class="ch"><div class="ct">Messages</div><div class="cs">Communication directe avec l'équipe KAP</div></div>
+            <div id="portal-messages" style="padding:16px 18px;max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:12px">
+              <!-- Messages existants -->
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <div class="av" style="background:var(--navy);color:var(--line);width:28px;height:28px;font-size:10px;flex-shrink:0">AK</div>
+                <div style="flex:1">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                    <span style="font-size:12px;font-weight:600;color:var(--navy)">Augustin Kpantché</span>
+                    <span style="font-size:10px;color:var(--slate)">Il y a 2 jours</span>
+                  </div>
+                  <div style="background:var(--surface);border-radius:0 var(--r-lg) var(--r-lg) var(--r-lg);padding:10px 13px;font-size:12.5px;color:var(--navy-2);line-height:1.5">
+                    Mémorandum v1 en relecture finale — retour attendu vendredi 15 juin. 3 fonds UEMOA ont été approchés et sont en cours d'examen de votre dossier.
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <div class="av" style="background:var(--navy);color:var(--line);width:28px;height:28px;font-size:10px;flex-shrink:0">AK</div>
+                <div style="flex:1">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                    <span style="font-size:12px;font-weight:600;color:var(--navy)">Augustin Kpantché</span>
+                    <span style="font-size:10px;color:var(--slate)">Il y a 5 jours</span>
+                  </div>
+                  <div style="background:var(--surface);border-radius:0 var(--r-lg) var(--r-lg) var(--r-lg);padding:10px 13px;font-size:12.5px;color:var(--navy-2);line-height:1.5">
+                    Bonjour Konan, le modèle financier v2 a été finalisé — vous pouvez le télécharger dans l'onglet Livrables. Merci de valider les hypothèses de croissance d'ici jeudi.
+                  </div>
+                </div>
+              </div>
+              <div id="portal-messages-new"></div>
+            </div>
+            <div style="padding:14px 18px;border-top:1px solid var(--surface-2)">
+              <div style="display:flex;gap:8px">
+                <textarea id="portal-msg-input" class="fi" rows="2" style="flex:1;resize:none"
+                  placeholder="Écrire un message à l'équipe KAP..."></textarea>
+                <button class="btn btn-primary" onclick="sendClientMessage()" style="align-self:flex-end">
+                  <i class="ti ti-send"></i> Envoyer
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="card">
-          <div class="ch"><div class="ct">Messages de l'équipe KAP</div></div>
-          <div class="act-item"><div class="act-dot d-ok"></div><div><div class="act-txt">Augustin Kpantché · Mémorandum v1 en relecture — retour attendu vendredi</div><div class="act-time">Il y a 2 jours</div></div></div>
-          <div class="act-item"><div class="act-dot d-info"></div><div><div class="act-txt">Augustin Kpantché · 3 fonds UEMOA approchés · réponses sous 2 semaines</div><div class="act-time">Il y a 5 jours</div></div></div>
+        <!-- Tab Infos mission -->
+        <div id="portal-infos" style="display:none">
+          <div class="g2e">
+            <div class="card">
+              <div class="ch"><div class="ct">Détails de la mission</div></div>
+              <div class="sr"><span class="sr-l">Référence</span><span class="sr-v">KAP-2026-001</span></div>
+              <div class="sr"><span class="sr-l">Type</span><span class="sr-v">Levée de fonds</span></div>
+              <div class="sr"><span class="sr-l">Montant ciblé</span><span class="sr-v" style="color:var(--accent)">50 M FCFA</span></div>
+              <div class="sr"><span class="sr-l">Honoraires</span><span class="sr-v">1,5 M FCFA · success fee</span></div>
+              <div class="sr"><span class="sr-l">Date démarrage</span><span class="sr-v">10 mai 2026</span></div>
+              <div class="sr"><span class="sr-l">Échéance prévisionnelle</span><span class="sr-v">Oct. 2026</span></div>
+              <div class="sr"><span class="sr-l">Statut facturation</span><span class="badge b-orange">Acompte 500K · En attente solde</span></div>
+            </div>
+            <div class="card">
+              <div class="ch"><div class="ct">Votre interlocuteur KAP</div></div>
+              <div class="cb" style="padding:16px 18px">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+                  <div class="av" style="width:44px;height:44px;background:var(--navy);color:var(--line);font-size:14px;border:1px solid rgba(184,150,110,.3)">AK</div>
+                  <div>
+                    <div class="dn">Augustin Kpantché</div>
+                    <div class="dm">Fondateur & CEO · KAP Growth & Investment</div>
+                  </div>
+                </div>
+                <div class="sr" style="padding:8px 0"><span class="sr-l">Email</span><span style="font-size:12px;color:var(--accent)">kpantche.augustin@gmail.com</span></div>
+                <div class="sr" style="padding:8px 0"><span class="sr-l">Téléphone</span><span style="font-size:12px">+225 07 09 92 64 27</span></div>
+                <div class="sr" style="padding:8px 0"><span class="sr-l">Localisation</span><span style="font-size:12px">Abidjan, Plateau · CI</span></div>
+              </div>
+            </div>
+          </div>
         </div>
+
       </div>
-    `;
-    pg.classList.add('active');
+    </div>
+  `;
+
+  pg.classList.add('active');
+  document.getElementById('portal-msg-badge').style.display = 'inline';
+}
+
+function portalTab(tab, el) {
+  // Désactiver tous les tabs
+  document.querySelectorAll('#portal-tabs .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+
+  // Afficher le bon contenu
+  ['suivi','livrables','messagerie','infos'].forEach(t => {
+    const div = document.getElementById('portal-' + t);
+    if (div) div.style.display = t === tab ? 'block' : 'none';
+  });
+
+  // Masquer le badge messages
+  if (tab === 'messagerie') {
+    const badge = document.getElementById('portal-msg-badge');
+    if (badge) badge.style.display = 'none';
   }
 }
 
-// ── Déconnexion ──
-function authLogout() {
-  currentUser = null;
-  const overlay = document.getElementById('auth-overlay');
-  overlay.style.display = 'flex';
-  overlay.style.opacity = '0';
-  setTimeout(() => {
-    overlay.style.opacity = '1';
-    overlay.style.transition = 'opacity .3s ease';
-  }, 50);
+function sendClientMessage() {
+  const input = document.getElementById('portal-msg-input');
+  const text = input?.value.trim();
+  if (!text) return;
 
-  // Réinitialiser
-  document.getElementById('auth-email').value = '';
-  document.getElementById('auth-pass').value = '';
-  document.getElementById('auth-error').classList.remove('show');
-  document.getElementById('auth-email').classList.remove('error');
-  document.getElementById('auth-pass').classList.remove('error');
-  const btn = document.getElementById('auth-btn');
-  btn.disabled = false;
-  document.getElementById('auth-btn-text').style.display = 'block';
-  document.getElementById('auth-loading').style.display = 'none';
+  const container = document.getElementById('portal-messages-new');
+  if (!container) return;
 
-  // Supprimer menu user
-  const um = document.getElementById('user-menu-btn');
-  if (um) um.remove();
+  const user = currentUser;
+  const div = document.createElement('div');
+  div.style.cssText = 'display:flex;gap:10px;align-items:flex-start;flex-direction:row-reverse';
+  div.innerHTML = `
+    <div class="av" style="background:var(--ok);color:#fff;width:28px;height:28px;font-size:10px;flex-shrink:0">${(user?.initials || 'CL')}</div>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;justify-content:flex-end">
+        <span style="font-size:10px;color:var(--slate)">À l'instant</span>
+        <span style="font-size:12px;font-weight:600;color:var(--navy)">${kapEscapeHtml(user?.name || 'Client')}</span>
+      </div>
+      <div style="background:var(--accent-pale);border:1px solid var(--accent-line);border-radius:var(--r-lg) 0 var(--r-lg) var(--r-lg);padding:10px 13px;font-size:12.5px;color:var(--navy-2);line-height:1.5;text-align:right">
+        ${kapEscapeHtml(text)}
+      </div>
+    </div>`;
 
-  // Réactiver navigation
-  document.querySelectorAll('.ni, .si').forEach(el => {
-    el.style.opacity = '';
-    el.style.pointerEvents = '';
-  });
-  document.querySelectorAll('[id^="sub-"]').forEach(el => {
-    el.style.display = '';
-  });
+  container.appendChild(div);
+  input.value = '';
+
+  // Scroll to bottom
+  const messages = document.getElementById('portal-messages');
+  if (messages) messages.scrollTop = messages.scrollHeight;
+
+  kapToast('Message envoyé à l'équipe KAP');
 }
+
 
 function showProfile() { alert('Profil utilisateur — à connecter avec Supabase'); }
 function showSettings() {
@@ -6677,6 +6984,123 @@ if (typeof _navOrig2 === 'function') {
     if (id === 'dashboard') setTimeout(refreshDashboard, 50);
   };
 }
+</script>
+
+
+<!-- ══════════ UTILITAIRES COMPLÉMENTAIRES ══════════ -->
+<script>
+
+// ── Score KAP Investment ──
+function calculerScoreKAP() {
+  const financier = parseFloat(document.getElementById('f-score-fin')?.value) || 0;
+  const marche    = parseFloat(document.getElementById('f-score-mkt')?.value) || 0;
+  const mgmt      = parseFloat(document.getElementById('f-score-mgmt')?.value) || 0;
+  const juridique = parseFloat(document.getElementById('f-score-jur')?.value) || 0;
+
+  // Utiliser les inputs du formulaire scoring
+  const inputs = document.querySelectorAll('[id^="f-score-"]');
+  const vals = [...inputs].map(i => parseFloat(i.value) || 0);
+  if (vals.length < 4 || vals.every(v => v === 0)) {
+    kapToast('Renseignez les 4 scores (0–25 chacun) pour calculer.', true);
+    return;
+  }
+
+  const total = vals.reduce((a,b) => a+b, 0);
+  const mention = total >= 75 ? '✅ Investissement recommandé'
+                : total >= 60 ? '⚠️ Conditionnel — conditions à définir'
+                : '❌ Non recommandé — risques élevés';
+  const badgeClass = total >= 75 ? 'b-green' : total >= 60 ? 'b-orange' : 'b-red';
+
+  kapToast(`Score KAP : ${total}/100 · ${mention}`);
+
+  // Si un résultat existe déjà, le mettre à jour visuellement
+  const resultEl = document.getElementById('score-result-display');
+  if (resultEl) {
+    resultEl.innerHTML = `
+      <div style="text-align:center;padding:12px">
+        <div style="font-family:var(--font-display);font-size:36px;color:var(--navy);margin-bottom:4px">${total}<span style="font-size:16px;color:var(--slate)">/100</span></div>
+        <span class="badge ${badgeClass}" style="font-size:12px;padding:4px 14px">${mention}</span>
+      </div>`;
+  }
+}
+
+// ── Bouton PDF sur les factures dynamiques ──
+const _origRenderFactures = window.renderFactures;
+if (typeof renderFactures === 'function') {
+  const origRF = renderFactures;
+  window.renderFactures = function() {
+    origRF();
+    // Ajouter bouton PDF à chaque facture nouvellement créée
+    const tbody = document.getElementById('factures-tbody');
+    if (!tbody) return;
+    tbody.querySelectorAll('tr[data-kap-facture]').forEach(tr => {
+      if (!tr.querySelector('.facture-pdf-btn')) {
+        const factures = kapLoad(KAP_STORE_KEYS.factures);
+        const id = tr.getAttribute('data-kap-facture');
+        const f = factures.find(x => x.id === id);
+        if (f) {
+          const td = document.createElement('td');
+          td.innerHTML = `<button class="btn btn-ghost facture-pdf-btn" style="padding:3px 8px;font-size:10px" onclick="exportFacturePDF(${JSON.stringify(f).replace(/"/g,'&quot;')})"><i class="ti ti-download"></i></button>`;
+          tr.appendChild(td);
+        }
+      }
+    });
+  };
+}
+
+// ── Enrichir les empty states restants avec des liens ──
+function enrichEmptyStates() {
+  const links = {
+    'pg-ia-scenarios': { icon:'ti-adjustments', title:'Analyse de scénarios', sub:'Importez un modèle BP pour simuler les 3 scénarios', btn:'Ouvrir Modélisation →', target:'model-bp' },
+    'pg-ia-dcf':       { icon:'ti-calculator',  title:'Valorisation DCF',      sub:'Saisissez les paramètres WACC et cash flows', btn:'Saisir les paramètres →', target:'model-dcf' },
+    'pg-ia-bench':     { icon:'ti-chart-bar',    title:'Benchmark sectoriel',    sub:'Comparez les ratios aux standards UEMOA', btn:'Lancer le scoring →', target:'inv-scoring' },
+  };
+  Object.entries(links).forEach(([pgId, cfg]) => {
+    const pg = document.getElementById(pgId);
+    if (!pg) return;
+    const empty = pg.querySelector('.empty');
+    if (!empty) return;
+    // Vérifier si le bouton est déjà là
+    if (empty.querySelector('.btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-primary';
+    btn.style.marginTop = '8px';
+    btn.textContent = cfg.btn;
+    btn.onclick = () => nav(cfg.target, null);
+    empty.appendChild(btn);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', enrichEmptyStates);
+if (document.readyState !== 'loading') enrichEmptyStates();
+
+// ── Améliorer la navigation : activer les bons éléments sidebar ──
+const _navFinal = window.nav;
+if (typeof _navFinal === 'function') {
+  window.nav = function(id, el) {
+    _navFinal(id, el);
+    // Auto-ouvrir le sous-groupe parent si nécessaire
+    const subGroups = {
+      'conseil-diagnostic':'sub-conseil', 'conseil-note':'sub-conseil',
+      'conseil-restructuration':'sub-conseil', 'conseil-gouvernance':'sub-conseil',
+      'model-bp':'sub-model', 'model-dcf':'sub-model',
+      'model-sensi':'sub-model', 'model-databook':'sub-model',
+      'levee-memo':'sub-levee', 'levee-dossier':'sub-levee',
+      'levee-struct':'sub-levee', 'levee-pitch':'sub-levee', 'levee-closing':'sub-levee',
+      'note-memo':'sub-note', 'note-pitch':'sub-note', 'note-rapport':'sub-note',
+      'academy-catalogue':'sub-academy', 'academy-sessions':'sub-academy',
+      'academy-certifs':'sub-academy', 'academy-publi':'sub-academy',
+      'inv-pipeline':'sub-invest', 'inv-dd':'sub-invest', 'inv-scoring':'sub-invest',
+      'inv-portef':'sub-invest', 'inv-fees':'sub-invest',
+    };
+    const subId = subGroups[id];
+    if (subId) {
+      const sub = document.getElementById(subId);
+      if (sub) sub.classList.add('open');
+    }
+  };
+}
+
 </script>
 
 </body>
